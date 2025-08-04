@@ -50,11 +50,27 @@ public class NeuralNetwork {
         this.layers.get(CommonConstants.FIRST_LAYER).setInputs(inputs);
     }
 
-    public void forwardPass(){
+    public void forwardPropagation(){
         this.layers.get(CommonConstants.FIRST_LAYER).calculateLayerOutputs();
         for (int layerIndex = CommonConstants.SECOND_LAYER; layerIndex < this.layersCount; layerIndex++) {
             this.layers.get(layerIndex).setInputs(this.layers.get(layerIndex - 1).getLayerOutputs());
             this.layers.get(layerIndex).calculateLayerOutputs();
         }
+    }
+
+    public double getErrorTotal(double[] target){
+        double error = 0.0;
+        for(int outputIndex = 0; outputIndex < this.getLastLayer().getLayerOutputs().length; outputIndex++){
+            error = error + Math.pow(target[outputIndex] - this.getLastLayer().getLayerOutputs()[outputIndex],2.0) / 2.0;
+        }
+        return error;
+    }
+
+    public double[] getDErrorTotalDOutput(double[] target){
+        double[] errors = new double[this.getLastLayer().getLayerOutputs().length];
+        for(int outputIndex = 0; outputIndex < this.getLastLayer().getLayerOutputs().length; outputIndex++){
+            errors[outputIndex] = -1.0 * (target[outputIndex] - this.getLastLayer().getLayerOutputs()[outputIndex]);
+        }
+        return errors;
     }
 }

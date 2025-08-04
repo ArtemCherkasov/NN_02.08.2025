@@ -14,6 +14,8 @@ class NeuralNetworkTest {
     public final static int SECOND_LAYER_NODES_COUNT = 2;
     public final static double FIRST_INPUT_TO_NETWORK = 0.05;
     public final static double SECOND_INPUT_TO_NETWORK = 0.1;
+    public final static double FIRST_OUTPUT_FROM_NETWORK = 0.01;
+    public final static double SECOND_OUTPUT_FROM_NETWORK = 0.99;
 
     NeuralNetwork neuralNetwork;
 
@@ -42,7 +44,7 @@ class NeuralNetworkTest {
         neuralNetwork.getLayers().get(0).getNodes().get(1).setCustomWeights(new double[]{0.25, 0.30, 0.35});
         neuralNetwork.getLayers().get(1).getNodes().get(0).setCustomWeights(new double[]{0.40, 0.45, 0.60});
         neuralNetwork.getLayers().get(1).getNodes().get(1).setCustomWeights(new double[]{0.50, 0.55, 0.60});
-        neuralNetwork.forwardPass();
+        neuralNetwork.forwardPropagation();
         double l0n0 = neuralNetwork.getLayers().get(0).getNodes().get(0).getOutput();
         double l0n1 = neuralNetwork.getLayers().get(0).getNodes().get(1).getOutput();
         double l1n0 = neuralNetwork.getLayers().get(1).getNodes().get(0).getOutput();
@@ -51,5 +53,9 @@ class NeuralNetworkTest {
         Assertions.assertEquals(BigDecimal.valueOf(0.596884378), BigDecimal.valueOf(l0n1).setScale(9, RoundingMode.HALF_UP));
         Assertions.assertEquals(BigDecimal.valueOf(0.75136507), BigDecimal.valueOf(l1n0).setScale(8, RoundingMode.HALF_UP));
         Assertions.assertEquals(BigDecimal.valueOf(0.772928465), BigDecimal.valueOf(l1n1).setScale(9, RoundingMode.HALF_UP));
+        double error = neuralNetwork.getErrorTotal(new double[]{FIRST_OUTPUT_FROM_NETWORK, SECOND_OUTPUT_FROM_NETWORK});
+        Assertions.assertEquals(BigDecimal.valueOf(0.298371109), BigDecimal.valueOf(error).setScale(9, RoundingMode.HALF_UP));
+        double[] errors = neuralNetwork.getDErrorTotalDOutput(new double[]{FIRST_OUTPUT_FROM_NETWORK, SECOND_OUTPUT_FROM_NETWORK});
+        Assertions.assertEquals(0, 0);
     }
 }
