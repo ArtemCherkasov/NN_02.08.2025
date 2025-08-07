@@ -8,11 +8,14 @@ public class Node {
     private double sum;
     private double output;
     private int inputCount;
+    private double deltaOfNode;
+    private double[] deltaOfWeight;
 
     public Node(int inputCount){
         this.inputCount = inputCount;
         this.inputs = new double[inputCount];
         this.weights = new double[inputCount];
+        this.deltaOfWeight = new double[inputCount];
         this.sum = 0.0;
         generateWeights();
     }
@@ -48,14 +51,36 @@ public class Node {
         this.weights = weights;
     }
 
+    public double getDeltaOfNode() {
+        return deltaOfNode;
+    }
+
+    public void setDeltaOfNode(double deltaOfNode) {
+        this.deltaOfNode = deltaOfNode;
+    }
+
+    public double[] getDeltaOfWeight() {
+        return deltaOfWeight;
+    }
+
+    public void setDeltaOfWeight(double[] deltaOfWeight) {
+        this.deltaOfWeight = deltaOfWeight;
+    }
+
+    public void weightUpdate(){
+        for(int weightIndex = 0; weightIndex < this.weights.length; weightIndex++){
+            this.weights[weightIndex] = this.weights[weightIndex] - this.deltaOfWeight[weightIndex];
+        }
+    }
+
     public void calculateOutput() {
         for(int i = 0; i < this.inputCount; i++){
             this.sum = this.sum + this.inputs[i]*this.weights[i];
         }
-        this.output = activateFunction(this.sum);
+        this.output = sigmaActivateFunction(this.sum);
     }
 
-    public double activateFunction(double summ){
+    public double sigmaActivateFunction(double summ){
         return 1.0 / (1.0 + Math.exp(-1 * summ));
     }
 

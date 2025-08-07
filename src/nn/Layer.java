@@ -37,6 +37,10 @@ public class Layer {
         return this.nodes;
     }
 
+    public Node getNode(int nodeIndex) {
+        return this.nodes.get(nodeIndex);
+    }
+
     public void calculateLayerOutputs(){
         for (int i = 0; i < this.nodesCount; i++) {
             this.nodes.get(i).calculateOutput();
@@ -69,6 +73,18 @@ public class Layer {
 
     public int getInputCount() {
         return inputCount;
+    }
+
+    public int getBiasesCount() {
+        return biasesCount;
+    }
+
+    public int getNodesCount() {
+        return nodesCount;
+    }
+
+    public int getInputAndBiasesCount() {
+        return this.inputCount + this.biasesCount;
     }
 
     public String layerInfo() {

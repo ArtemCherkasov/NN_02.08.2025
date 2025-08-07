@@ -28,8 +28,8 @@ class NeuralNetworkTest {
     @Test
     void networkConfigurationTest() {
         Assertions.assertEquals(2, neuralNetwork.getLayers().size());
-        Assertions.assertEquals(FIRST_LAYER_NODES_COUNT, neuralNetwork.getLayers().get(0).getNodes().size());
-        Assertions.assertEquals(SECOND_LAYER_NODES_COUNT, neuralNetwork.getLayers().get(1).getNodes().size());
+        Assertions.assertEquals(FIRST_LAYER_NODES_COUNT, neuralNetwork.getLayer(0).getNodes().size());
+        Assertions.assertEquals(SECOND_LAYER_NODES_COUNT, neuralNetwork.getLayer(1).getNodes().size());
     }
 
     @Test
@@ -40,22 +40,29 @@ class NeuralNetworkTest {
 
     @Test
     void calculationLayersTest(){
-        neuralNetwork.getLayers().get(0).getNodes().get(0).setCustomWeights(new double[]{0.15, 0.20, 0.35});
-        neuralNetwork.getLayers().get(0).getNodes().get(1).setCustomWeights(new double[]{0.25, 0.30, 0.35});
-        neuralNetwork.getLayers().get(1).getNodes().get(0).setCustomWeights(new double[]{0.40, 0.45, 0.60});
-        neuralNetwork.getLayers().get(1).getNodes().get(1).setCustomWeights(new double[]{0.50, 0.55, 0.60});
+        neuralNetwork.getLayer(0).getNode(0).setCustomWeights(new double[]{0.15, 0.20, 0.35});
+        neuralNetwork.getLayer(0).getNode(1).setCustomWeights(new double[]{0.25, 0.30, 0.35});
+        neuralNetwork.getLayer(1).getNode(0).setCustomWeights(new double[]{0.40, 0.45, 0.60});
+        neuralNetwork.getLayer(1).getNode(1).setCustomWeights(new double[]{0.50, 0.55, 0.60});
         neuralNetwork.forwardPropagation();
-        double l0n0 = neuralNetwork.getLayers().get(0).getNodes().get(0).getOutput();
-        double l0n1 = neuralNetwork.getLayers().get(0).getNodes().get(1).getOutput();
-        double l1n0 = neuralNetwork.getLayers().get(1).getNodes().get(0).getOutput();
-        double l1n1 = neuralNetwork.getLayers().get(1).getNodes().get(1).getOutput();
+        double l0n0 = neuralNetwork.getLayer(0).getNode(0).getOutput();
+        double l0n1 = neuralNetwork.getLayer(0).getNode(1).getOutput();
+        double l1n0 = neuralNetwork.getLayer(1).getNode(0).getOutput();
+        double l1n1 = neuralNetwork.getLayer(1).getNode(1).getOutput();
         Assertions.assertEquals(BigDecimal.valueOf(0.593269992), BigDecimal.valueOf(l0n0).setScale(9, RoundingMode.HALF_UP));
         Assertions.assertEquals(BigDecimal.valueOf(0.596884378), BigDecimal.valueOf(l0n1).setScale(9, RoundingMode.HALF_UP));
         Assertions.assertEquals(BigDecimal.valueOf(0.75136507), BigDecimal.valueOf(l1n0).setScale(8, RoundingMode.HALF_UP));
         Assertions.assertEquals(BigDecimal.valueOf(0.772928465), BigDecimal.valueOf(l1n1).setScale(9, RoundingMode.HALF_UP));
         double error = neuralNetwork.getErrorTotal(new double[]{FIRST_OUTPUT_FROM_NETWORK, SECOND_OUTPUT_FROM_NETWORK});
         Assertions.assertEquals(BigDecimal.valueOf(0.298371109), BigDecimal.valueOf(error).setScale(9, RoundingMode.HALF_UP));
-        double[] errors = neuralNetwork.getDErrorTotalDOutput(new double[]{FIRST_OUTPUT_FROM_NETWORK, SECOND_OUTPUT_FROM_NETWORK});
-        Assertions.assertEquals(0, 0);
+        neuralNetwork.setLearningRate(CommonConstants.LEARNING_RATE_DEFAULT_VALUE);
+        neuralNetwork.calculateWeightDeltaLastLayer(new double[]{FIRST_OUTPUT_FROM_NETWORK, SECOND_OUTPUT_FROM_NETWORK});
+        neuralNetwork.weightUpdate();
+        double w0l0n0 = neuralNetwork.getLayer(1).getNode(1).getWeights()[0];
+        double w1l0n0 = neuralNetwork.getLayer(1).getNode(1).getWeights()[1];
+        double w2l0n0 = neuralNetwork.getLayer(1).getNode(1).getWeights()[2];
+        Assertions.assertEquals(BigDecimal.valueOf(0.51130127), BigDecimal.valueOf(w0l0n0).setScale(8, RoundingMode.HALF_UP));
+        Assertions.assertEquals(BigDecimal.valueOf(0.561370121), BigDecimal.valueOf(w1l0n0).setScale(9, RoundingMode.HALF_UP));
+        Assertions.assertEquals(BigDecimal.valueOf(0.619049118), BigDecimal.valueOf(w2l0n0).setScale(9, RoundingMode.HALF_UP));
     }
 }

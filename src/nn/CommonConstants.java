@@ -10,4 +10,5 @@ public class CommonConstants {
     public final static int SECOND_LAYER = 1;
     public final static String INCORRECT_INPUTS_COUNT = "Incorrect count of input values.";
     public final static double BIAS_DEFAULT_VALUE = 1.0;
+    public final static double LEARNING_RATE_DEFAULT_VALUE = 0.5;
 }
