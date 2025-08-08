@@ -24,6 +24,10 @@ public class Node {
         return inputs;
     }
 
+    public double getInput(int inputIndex) {
+        return this.inputs[inputIndex];
+    }
+
     public void setInputs(double[] x) {
         this.inputs = x;
     }
