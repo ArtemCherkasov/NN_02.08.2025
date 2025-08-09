@@ -8,7 +8,7 @@ public class Node {
     private double sum;
     private double output;
     private int inputCount;
-    private double deltaOfNode;
+    private double deltaOfNode; // dE_dOut*dOut_dNet
     private double[] deltaOfWeight;
 
     public Node(int inputCount){
@@ -42,6 +42,10 @@ public class Node {
 
     public double[] getWeights() {
         return weights;
+    }
+
+    public double getWeight(int weightIndex) {
+        return this.weights[weightIndex];
     }
 
     public void generateWeights(){

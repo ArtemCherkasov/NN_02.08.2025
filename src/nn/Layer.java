@@ -87,6 +87,15 @@ public class Layer {
         return this.inputCount + this.biasesCount;
     }
 
+    public double getErrorFromAllNodes(int weightIndex){
+        double result = 0.0;
+        for(int nodeIndex = 0; nodeIndex < this.nodesCount; nodeIndex++){
+            double dE_dOutHidden = this.getNode(nodeIndex).getDeltaOfNode()*this.getNode(nodeIndex).getWeight(weightIndex);
+            result = result + dE_dOutHidden;
+        }
+        return result;
+    }
+
     public String layerInfo() {
         String head = this.layerName;
         String nodesInfo = CommonConstants.LAYER_NODES_INFO_HEAD.concat(CommonConstants.WHITE_SPACE).concat(String.valueOf(this.nodesCount));

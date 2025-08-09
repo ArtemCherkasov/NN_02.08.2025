@@ -57,6 +57,7 @@ class NeuralNetworkTest {
         Assertions.assertEquals(BigDecimal.valueOf(0.298371109), BigDecimal.valueOf(error).setScale(9, RoundingMode.HALF_UP));
         neuralNetwork.setLearningRate(CommonConstants.LEARNING_RATE_DEFAULT_VALUE);
         neuralNetwork.calculateWeightDeltaLastLayer(new double[]{FIRST_OUTPUT_FROM_NETWORK, SECOND_OUTPUT_FROM_NETWORK});
+        neuralNetwork.calculateWeightDeltaHiddenLayers();
         neuralNetwork.weightUpdate();
         double w0l0n0 = neuralNetwork.getLayer(1).getNode(1).getWeights()[0];
         double w1l0n0 = neuralNetwork.getLayer(1).getNode(1).getWeights()[1];
@@ -64,5 +65,10 @@ class NeuralNetworkTest {
         Assertions.assertEquals(BigDecimal.valueOf(0.51130127), BigDecimal.valueOf(w0l0n0).setScale(8, RoundingMode.HALF_UP));
         Assertions.assertEquals(BigDecimal.valueOf(0.561370121), BigDecimal.valueOf(w1l0n0).setScale(9, RoundingMode.HALF_UP));
         Assertions.assertEquals(BigDecimal.valueOf(0.619049118), BigDecimal.valueOf(w2l0n0).setScale(9, RoundingMode.HALF_UP));
+        neuralNetwork.forwardPropagation();
+        //TODO 
+        /*
+        error = neuralNetwork.getErrorTotal(new double[]{FIRST_OUTPUT_FROM_NETWORK, SECOND_OUTPUT_FROM_NETWORK});
+         */
     }
 }

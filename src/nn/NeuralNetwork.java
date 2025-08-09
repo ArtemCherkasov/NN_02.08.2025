@@ -79,13 +79,28 @@ public class NeuralNetwork {
     public void calculateWeightDeltaLastLayer(double[] target){
         for(int outputIndex = 0; outputIndex < this.getLastLayer().getLayerOutputs().length; outputIndex++){
             double dE_dOut = -1.0 * (target[outputIndex] - this.getLastLayer().getNode(outputIndex).getOutput());
-            double dOut_dNet = this.getLastLayer().getNode(outputIndex).getOutput()*(1 - this.getLastLayer().getNode(outputIndex).getOutput());
+            double dOut_dNet = this.getLastLayer().getNode(outputIndex).getOutput()*(1.0 - this.getLastLayer().getNode(outputIndex).getOutput());
             this.getLastLayer().getNode(outputIndex).setDeltaOfNode(dE_dOut*dOut_dNet);
             double[] dE_dWeightArray = new double[this.getLastLayer().getInputAndBiasesCount()];
             for (int inputIndex = 0; inputIndex < this.getLastLayer().getInputAndBiasesCount(); inputIndex++){
                 dE_dWeightArray[inputIndex] = this.learningRate*this.getLastLayer().getNode(outputIndex).getDeltaOfNode()*this.getLastLayer().getNode(outputIndex).getInput(inputIndex);
             }
             this.getLastLayer().getNode(outputIndex).setDeltaOfWeight(dE_dWeightArray);
+        }
+    }
+
+    public void calculateWeightDeltaHiddenLayers(){
+        for(int layerIndex = this.layersCount - 2; layerIndex >= 0; layerIndex--){
+            for(int outputIndex = 0; outputIndex < this.getLayer(layerIndex).getLayerOutputs().length; outputIndex++){
+                double dE_dOutHidden = this.getLayer(layerIndex + 1).getErrorFromAllNodes(outputIndex);
+                double dOutHidden_dNetHidden = this.getLayer(layerIndex).getNode(outputIndex).getOutput() * (1.0 - this.getLayer(layerIndex).getNode(outputIndex).getOutput());
+                this.getLayer(layerIndex).getNode(outputIndex).setDeltaOfNode(dE_dOutHidden*dOutHidden_dNetHidden);
+                double[] dE_dWeightArray = new double[this.getLayer(layerIndex).getInputAndBiasesCount()];
+                for (int inputIndex = 0; inputIndex < this.getLastLayer().getInputAndBiasesCount(); inputIndex++){
+                    dE_dWeightArray[inputIndex] = this.learningRate*this.getLayer(layerIndex).getNode(outputIndex).getDeltaOfNode()*this.getLayer(layerIndex).getNode(outputIndex).getInput(inputIndex);
+                }
+                this.getLayer(layerIndex).getNode(outputIndex).setDeltaOfWeight(dE_dWeightArray);
+            }
         }
     }
 
