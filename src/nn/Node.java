@@ -59,6 +59,10 @@ public class Node {
         this.weights = weights;
     }
 
+    public void setCustomWeight(int weigthIndex, double weight){
+        this.weights[weigthIndex] = weight;
+    }
+
     public double getDeltaOfNode() {
         return deltaOfNode;
     }
@@ -82,6 +86,7 @@ public class Node {
     }
 
     public void calculateOutput() {
+        this.sum = 0.0;
         for(int i = 0; i < this.inputCount; i++){
             this.sum = this.sum + this.inputs[i]*this.weights[i];
         }

@@ -65,10 +65,20 @@ class NeuralNetworkTest {
         Assertions.assertEquals(BigDecimal.valueOf(0.51130127), BigDecimal.valueOf(w0l0n0).setScale(8, RoundingMode.HALF_UP));
         Assertions.assertEquals(BigDecimal.valueOf(0.561370121), BigDecimal.valueOf(w1l0n0).setScale(9, RoundingMode.HALF_UP));
         Assertions.assertEquals(BigDecimal.valueOf(0.619049118), BigDecimal.valueOf(w2l0n0).setScale(9, RoundingMode.HALF_UP));
+        neuralNetwork.getLayer(0).getNode(0).setCustomWeight(2, 0.35);
+        neuralNetwork.getLayer(0).getNode(1).setCustomWeight(2, 0.35);
+        neuralNetwork.getLayer(1).getNode(0).setCustomWeight(2, 0.60);
+        neuralNetwork.getLayer(1).getNode(1).setCustomWeight(2, 0.60);
         neuralNetwork.forwardPropagation();
-        //TODO 
-        /*
         error = neuralNetwork.getErrorTotal(new double[]{FIRST_OUTPUT_FROM_NETWORK, SECOND_OUTPUT_FROM_NETWORK});
-         */
+        Assertions.assertEquals(BigDecimal.valueOf(0.291027774), BigDecimal.valueOf(error).setScale(9, RoundingMode.HALF_UP));
+        for (int i = 1; i < 12000; i++){
+            neuralNetwork.calculateWeightDeltaLastLayer(new double[]{FIRST_OUTPUT_FROM_NETWORK, SECOND_OUTPUT_FROM_NETWORK});
+            neuralNetwork.calculateWeightDeltaHiddenLayers();
+            neuralNetwork.weightUpdate();
+            neuralNetwork.forwardPropagation();
+        }
+        error = neuralNetwork.getErrorTotal(new double[]{FIRST_OUTPUT_FROM_NETWORK, SECOND_OUTPUT_FROM_NETWORK});
+        Assertions.assertEquals(BigDecimal.valueOf(0.000001309), BigDecimal.valueOf(error).setScale(9, RoundingMode.HALF_UP));
     }
 }

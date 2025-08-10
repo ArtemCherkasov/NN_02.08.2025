@@ -77,7 +77,7 @@ public class NeuralNetwork {
     }
 
     public void calculateWeightDeltaLastLayer(double[] target){
-        for(int outputIndex = 0; outputIndex < this.getLastLayer().getLayerOutputs().length; outputIndex++){
+        for(int outputIndex = 0; outputIndex < this.getLastLayer().getNodesCount(); outputIndex++){
             double dE_dOut = -1.0 * (target[outputIndex] - this.getLastLayer().getNode(outputIndex).getOutput());
             double dOut_dNet = this.getLastLayer().getNode(outputIndex).getOutput()*(1.0 - this.getLastLayer().getNode(outputIndex).getOutput());
             this.getLastLayer().getNode(outputIndex).setDeltaOfNode(dE_dOut*dOut_dNet);
@@ -91,7 +91,7 @@ public class NeuralNetwork {
 
     public void calculateWeightDeltaHiddenLayers(){
         for(int layerIndex = this.layersCount - 2; layerIndex >= 0; layerIndex--){
-            for(int outputIndex = 0; outputIndex < this.getLayer(layerIndex).getLayerOutputs().length; outputIndex++){
+            for(int outputIndex = 0; outputIndex < this.getLayer(layerIndex).getNodesCount(); outputIndex++){
                 double dE_dOutHidden = this.getLayer(layerIndex + 1).getErrorFromAllNodes(outputIndex);
                 double dOutHidden_dNetHidden = this.getLayer(layerIndex).getNode(outputIndex).getOutput() * (1.0 - this.getLayer(layerIndex).getNode(outputIndex).getOutput());
                 this.getLayer(layerIndex).getNode(outputIndex).setDeltaOfNode(dE_dOutHidden*dOutHidden_dNetHidden);
