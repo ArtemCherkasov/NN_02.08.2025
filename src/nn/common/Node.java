@@ -1,4 +1,4 @@
-package nn;
+package nn.common;
 
 import java.util.Random;
 
@@ -6,7 +6,7 @@ public class Node {
     private double[] inputs;
     private double[] weights;
     private double sum;
-    private double output;
+    private double nodeValue;
     private int inputCount;
     private double deltaOfNode; // dE_dOut*dOut_dNet
     private double[] deltaOfWeight;
@@ -36,8 +36,12 @@ public class Node {
         return sum;
     }
 
-    public double getOutput() {
-        return output;
+    public void setNodeValue(double nodeValue) {
+        this.nodeValue = nodeValue;
+    }
+
+    public double getNodeValue() {
+        return nodeValue;
     }
 
     public double[] getWeights() {
@@ -85,20 +89,32 @@ public class Node {
         }
     }
 
-    public void calculateOutput() {
+    public void calculateSigmaOutput() {
         this.sum = 0.0;
         for(int i = 0; i < this.inputCount; i++){
             this.sum = this.sum + this.inputs[i]*this.weights[i];
         }
-        this.output = sigmaActivateFunction(this.sum);
+        this.nodeValue = sigmaActivateFunction(this.sum);
+    }
+
+    public void calculateHiberbolicTangentOutput() {
+        this.sum = 0.0;
+        for(int i = 0; i < this.inputCount; i++){
+            this.sum = this.sum + this.inputs[i]*this.weights[i];
+        }
+        this.nodeValue = tanhActivateFunction(this.sum);
     }
 
     public double sigmaActivateFunction(double summ){
         return 1.0 / (1.0 + Math.exp(-1 * summ));
     }
 
+    public double tanhActivateFunction(double summ){
+        return (Math.exp(summ) - Math.exp(-1 * summ)) / (Math.exp(summ) + Math.exp(-1 * summ));
+    }
+
     @Override
     public String toString() {
-        return String.format("%2.9f", this.output);
+        return String.format("%2.9f", this.nodeValue);
     }
 }

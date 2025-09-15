@@ -1,10 +1,9 @@
-package nn;
+package nn.common;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
-import java.util.stream.Stream;
 
 public class Layer {
     private List<Node> nodes;
@@ -41,9 +40,15 @@ public class Layer {
         return this.nodes.get(nodeIndex);
     }
 
-    public void calculateLayerOutputs(){
+    public void calculateLayerSigmaOutputs(){
         for (int i = 0; i < this.nodesCount; i++) {
-            this.nodes.get(i).calculateOutput();
+            this.nodes.get(i).calculateSigmaOutput();
+        }
+    }
+
+    public void calculateLayerTanhOutputs(){
+        for (int i = 0; i < this.nodesCount; i++) {
+            this.nodes.get(i).calculateHiberbolicTangentOutput();
         }
     }
 
@@ -55,7 +60,7 @@ public class Layer {
     }
 
     public double[] getLayerOutputs(){
-        return this.nodes.stream().mapToDouble(node -> node.getOutput()).toArray();
+        return this.nodes.stream().mapToDouble(node -> node.getNodeValue()).toArray();
     }
 
     public double[] getFlatInputs(){

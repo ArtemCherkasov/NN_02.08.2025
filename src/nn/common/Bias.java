@@ -1,4 +1,4 @@
-package nn;
+package nn.common;
 
 public class Bias {
     private double value;
