@@ -19,11 +19,15 @@ public class LSTMRow {
     }
 
     public List<LSTMCell> getCellList() {
-        return cellList;
+        return this.cellList;
     }
 
     public LSTMCell getCell(int cellIndex) {
-        return cellList.get(cellIndex);
+        return this.cellList.get(cellIndex);
+    }
+
+    public void setInputToLSTMRow(double[] inputVector){
+        this.getCell(CommonConstants.FIRST_CELL).setInputVectorX(inputVector);
     }
 
 }

@@ -70,7 +70,7 @@ public class LSTMCell {
         if (this.hiddenStateInput.length != hiddenStateInput.length){
             throw new NNInputExceptions(CommonConstants.INCORRECT_INPUTS_COUNT);
         }
-        this.hiddenStateInput = inputVectorX;
+        this.hiddenStateInput = hiddenStateInput;
     }
 
     public void setCellStateInput(double[] cellStateInput){

@@ -1,5 +1,7 @@
 package nn.common;
 
+import exceptions.NNInputExceptions;
+
 import java.util.Random;
 
 public class Node {
@@ -60,6 +62,9 @@ public class Node {
     }
 
     public void setCustomWeights(double[] weights){
+        if (this.weights.length != weights.length){
+            throw new NNInputExceptions(CommonConstants.INCORRECT_INPUTS_COUNT, weights.length, this.weights.length);
+        }
         this.weights = weights;
     }
 
