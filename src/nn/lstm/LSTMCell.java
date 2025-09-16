@@ -6,16 +6,11 @@ import nn.common.CommonConstants;
 import nn.common.Layer;
 import nn.common.Node;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
 public class LSTMCell {
-    private List<Node> nodesInput;
-    private List<Bias> biases;
-    private int inputCount;
-    private int nodesCount;
-    private int biasesCount;
-    private int layerIndex;
     private int gatesNodeCount;
     private Layer forgetGate;
     private Layer inputGate;
@@ -80,7 +75,15 @@ public class LSTMCell {
         this.cellStateInput = cellStateInput;
     }
 
+    public double[] concatenateArrays(double[]... arrays){
+        return Arrays.stream(arrays).flatMapToDouble(val -> Arrays.stream(val)).toArray();
+    }
+
     public void calculateAllGates(){
+        this.forgetGate.setInputs(this.concatenateArrays(this.hiddenStateInput, this.inputVectorX));
+        this.inputGate.setInputs(this.concatenateArrays(this.hiddenStateInput, this.inputVectorX));
+        this.candidateCellState.setInputs(this.concatenateArrays(this.hiddenStateInput, this.inputVectorX));
+        this.outputGate.setInputs(this.concatenateArrays(this.hiddenStateInput, this.inputVectorX));
         this.forgetGate.calculateLayerSigmaOutputs();
         this.inputGate.calculateLayerSigmaOutputs();
         this.candidateCellState.calculateLayerTanhOutputs();

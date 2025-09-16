@@ -30,4 +30,12 @@ public class LSTMRow {
         this.getCell(CommonConstants.FIRST_CELL).setInputVectorX(inputVector);
     }
 
+    public void forwardPropogationRow(){
+        this.getCell(CommonConstants.FIRST_CELL).forwardPropagation();
+        for (int cellIndex = 1; cellIndex < this.lstmCellCount; cellIndex++) {
+            this.getCell(cellIndex).setInputVectorX(this.getCell(cellIndex - 1).getHiddenState());
+            this.getCell(cellIndex).forwardPropagation();
+        }
+    }
+
 }
