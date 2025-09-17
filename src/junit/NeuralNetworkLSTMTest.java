@@ -1,6 +1,7 @@
 package junit;
 
 import nn.lstm.LSTMRow;
+import nn.lstm.NeuralNetworkLSTM;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ class NeuralNetworkLSTMTest {
     public final static int THIRD_CELL_NODES_COUNT = 3;
 
     LSTMRow lstmRow;
+    NeuralNetworkLSTM nnLSTM;
 
     @BeforeEach
     public void initNetwork() {
@@ -65,10 +67,13 @@ class NeuralNetworkLSTMTest {
         lstmRow.getCell(2).getInputGate().getNode(2).setCustomWeights(new double[]{0.370, 0.375, 0.380, 0.385, 0.390, 0.395, 0.400, 0.405});
         lstmRow.getCell(2).getCandidateCellState().getNode(2).setCustomWeights(new double[]{0.410, 0.415, 0.420, 0.425, 0.430, 0.435, 0.440, 0.445});
         lstmRow.getCell(2).getOutputGate().getNode(2).setCustomWeights(new double[]{0.450, 0.455, 0.460, 0.465, 0.470, 0.475, 0.480, 0.485});
+
+        nnLSTM = new NeuralNetworkLSTM(lstmRow);
+
     }
 
     @Test
-    void networkConfigurationTest() {
+    void lstmRowConfigurationTest() {
         Assertions.assertEquals(3, lstmRow.getCellList().size());
         Assertions.assertEquals(FIRST_CELL_NODES_COUNT, lstmRow.getCell(0).getForgetGate().getNodes().size());
         Assertions.assertEquals(SECOND_CELL_NODES_COUNT, lstmRow.getCell(1).getForgetGate().getNodes().size());
@@ -85,7 +90,7 @@ class NeuralNetworkLSTMTest {
     }
 
     @Test
-    void forwardPropogationTest() {
+    void forwardPropogationLSRMRowTest() {
         lstmRow.forwardPropogationRow();
     }
 

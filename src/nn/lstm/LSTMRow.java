@@ -18,6 +18,10 @@ public class LSTMRow {
         }
     }
 
+    public LSTMRow(LSTMRow lstmRow) {
+        //TODO copy constructor
+    }
+
     public List<LSTMCell> getCellList() {
         return this.cellList;
     }

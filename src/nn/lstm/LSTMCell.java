@@ -33,6 +33,10 @@ public class LSTMCell {
         this.outputGate = new Layer(inputCount + gatesNodeCount, gatesNodeCount, biasesCount, layerIndex);
     }
 
+    public LSTMCell(LSTMCell lstmCell) {
+        //TODO copy constructor
+    }
+
     public int getGatesNodeCount() {
         return this.gatesNodeCount;
     }
@@ -123,10 +127,20 @@ public class LSTMCell {
         return c;
     }
 
+    public double[] sigmaFunction(double[] a){
+        int vectorLength = a.length;
+        double[] c = new double[vectorLength];
+        for (int vectorIndex = 0; vectorIndex < vectorLength; vectorIndex++) {
+            c[vectorIndex] = 1.0 / (1.0 + Math.exp(-1 * Math.exp(a[vectorIndex])));
+        }
+        return c;
+    }
+
     public void forwardPropagation(){
         this.calculateAllGates();
         this.cellState = this.pointwiseAddition(this.hadamardProduct(this.forgetGate.getLayerOutputs(), this.cellStateInput), this.hadamardProduct(this.inputGate.getLayerOutputs(), this.candidateCellState.getLayerOutputs()));
         this.hiddenState = this.hadamardProduct(this.outputGate.getLayerOutputs(), this.tanhFunction(this.cellState));
+        this.hiddenState = this.sigmaFunction(this.hiddenState);
     }
 
     public double[] getHiddenState(){
@@ -156,7 +170,5 @@ public class LSTMCell {
     public Layer getOutputGate() {
         return outputGate;
     }
-
-
 
 }
