@@ -7,29 +7,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NeuralNetworkLSTM {
-    private LSTMRow masterRow;
-
-    private List<LSTMRow> lstmRowList;
-    private int[] layersCountArray;
+    private final LSTMRow masterRow;
+    private final List<LSTMRow> lstmRowList;
 
     public NeuralNetworkLSTM(int[] layersCountArray) {
-        this.layersCountArray = layersCountArray;
         this.masterRow = new LSTMRow(layersCountArray);
         this.lstmRowList = new ArrayList<LSTMRow>();
         this.lstmRowList.add(masterRow);
     }
 
     public NeuralNetworkLSTM(LSTMRow lstmRow) {
-        //TODO copy constructor
+        this.masterRow = new LSTMRow(lstmRow);
+        this.lstmRowList = new ArrayList<LSTMRow>();
+        this.lstmRowList.add(masterRow);
     }
 
-    public void addLSTMRowsSeries(int seriesCount){
+    public void addLSTMRowsSeries(int seriesCount) {
         for (int i = 0; i < seriesCount; i++) {
-            this.lstmRowList.add(this.masterRow);
+            this.lstmRowList.add(new LSTMRow(this.masterRow));
         }
     }
 
-    public void setInputSeries(double[][] inputs){
+    public void setInputSeries(double[][] inputs) {
         int seriesCount = inputs.length;
         if (seriesCount != this.lstmRowList.size()) {
             throw new NNInputExceptions(CommonConstants.INCORRECT_SERIES_COUNT, inputs.length, this.lstmRowList.size());

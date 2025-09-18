@@ -1,21 +1,18 @@
 package nn.lstm;
 
 import exceptions.NNInputExceptions;
-import nn.common.Bias;
 import nn.common.CommonConstants;
 import nn.common.Layer;
-import nn.common.Node;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 public class LSTMCell {
-    private int gatesNodeCount;
-    private Layer forgetGate;
-    private Layer inputGate;
-    private Layer candidateCellState;
-    private Layer outputGate;
+    private final int gatesNodeCount;
+    private final Layer forgetGate;
+    private final Layer inputGate;
+    private final Layer candidateCellState;
+    private final Layer outputGate;
     private double[] cellStateInput;
     private double[] cellState;
     private double[] hiddenStateInput;
@@ -34,7 +31,17 @@ public class LSTMCell {
     }
 
     public LSTMCell(LSTMCell lstmCell) {
-        //TODO copy constructor
+        this.gatesNodeCount = lstmCell.gatesNodeCount;
+        this.cellStateInput = new double[lstmCell.cellStateInput.length];
+        this.hiddenStateInput = new double[lstmCell.hiddenStateInput.length];
+        this.inputVectorX = new double[lstmCell.inputVectorX.length];
+        this.cellStateInput = lstmCell.cellStateInput.clone();
+        this.hiddenStateInput = lstmCell.hiddenStateInput.clone();
+        this.inputVectorX = lstmCell.inputVectorX.clone();
+        this.forgetGate = new Layer(lstmCell.forgetGate);
+        this.inputGate = new Layer(lstmCell.inputGate);
+        this.candidateCellState = new Layer(lstmCell.candidateCellState);
+        this.outputGate = new Layer(lstmCell.outputGate);
     }
 
     public int getGatesNodeCount() {
@@ -45,45 +52,45 @@ public class LSTMCell {
         return this.gatesNodeCount;
     }
 
-    public void generatingInitialState(){
+    public void generatingInitialState() {
         Random randomWeight = new Random();
-        for(int i = 0; i < this.hiddenStateInput.length; i++){
+        for (int i = 0; i < this.hiddenStateInput.length; i++) {
             this.hiddenStateInput[i] = randomWeight.nextDouble() * 2 - 1;
             this.cellStateInput[i] = randomWeight.nextDouble() * 2 - 1;
         }
     }
 
-    public void setInitialState(double[] hiddenStateInput, double[] cellStateInput){
+    public void setInitialState(double[] hiddenStateInput, double[] cellStateInput) {
         this.hiddenStateInput = hiddenStateInput;
         this.cellStateInput = cellStateInput;
     }
 
-    public void setInputVectorX(double[] inputVectorX){
-        if (this.inputVectorX.length != inputVectorX.length){
+    public void setInputVectorX(double[] inputVectorX) {
+        if (this.inputVectorX.length != inputVectorX.length) {
             throw new NNInputExceptions(CommonConstants.INCORRECT_INPUTS_COUNT);
         }
         this.inputVectorX = inputVectorX;
     }
 
-    public void setHiddenStateInput(double[] hiddenStateInput){
-        if (this.hiddenStateInput.length != hiddenStateInput.length){
+    public void setHiddenStateInput(double[] hiddenStateInput) {
+        if (this.hiddenStateInput.length != hiddenStateInput.length) {
             throw new NNInputExceptions(CommonConstants.INCORRECT_INPUTS_COUNT);
         }
         this.hiddenStateInput = hiddenStateInput;
     }
 
-    public void setCellStateInput(double[] cellStateInput){
-        if (this.cellStateInput.length != cellStateInput.length){
+    public void setCellStateInput(double[] cellStateInput) {
+        if (this.cellStateInput.length != cellStateInput.length) {
             throw new NNInputExceptions(CommonConstants.INCORRECT_INPUTS_COUNT);
         }
         this.cellStateInput = cellStateInput;
     }
 
-    public double[] concatenateArrays(double[]... arrays){
+    public double[] concatenateArrays(double[]... arrays) {
         return Arrays.stream(arrays).flatMapToDouble(val -> Arrays.stream(val)).toArray();
     }
 
-    public void calculateAllGates(){
+    public void calculateAllGates() {
         this.forgetGate.setInputs(this.concatenateArrays(this.hiddenStateInput, this.inputVectorX));
         this.inputGate.setInputs(this.concatenateArrays(this.hiddenStateInput, this.inputVectorX));
         this.candidateCellState.setInputs(this.concatenateArrays(this.hiddenStateInput, this.inputVectorX));
@@ -94,8 +101,8 @@ public class LSTMCell {
         this.outputGate.calculateLayerSigmaOutputs();
     }
 
-    public double[] hadamardProduct(double[] a, double[] b){
-        if (a.length != b.length){
+    public double[] hadamardProduct(double[] a, double[] b) {
+        if (a.length != b.length) {
             throw new NNInputExceptions(CommonConstants.INCORRECT_INPUTS_COUNT);
         }
         int vectorLength = a.length;
@@ -106,8 +113,8 @@ public class LSTMCell {
         return c;
     }
 
-    public double[] pointwiseAddition(double[] a, double[] b){
-        if (a.length != b.length){
+    public double[] pointwiseAddition(double[] a, double[] b) {
+        if (a.length != b.length) {
             throw new NNInputExceptions(CommonConstants.INCORRECT_INPUTS_COUNT);
         }
         int vectorLength = a.length;
@@ -118,7 +125,7 @@ public class LSTMCell {
         return c;
     }
 
-    public double[] tanhFunction(double[] a){
+    public double[] tanhFunction(double[] a) {
         int vectorLength = a.length;
         double[] c = new double[vectorLength];
         for (int vectorIndex = 0; vectorIndex < vectorLength; vectorIndex++) {
@@ -127,7 +134,7 @@ public class LSTMCell {
         return c;
     }
 
-    public double[] sigmaFunction(double[] a){
+    public double[] sigmaFunction(double[] a) {
         int vectorLength = a.length;
         double[] c = new double[vectorLength];
         for (int vectorIndex = 0; vectorIndex < vectorLength; vectorIndex++) {
@@ -136,22 +143,22 @@ public class LSTMCell {
         return c;
     }
 
-    public void forwardPropagation(){
+    public void forwardPropagation() {
         this.calculateAllGates();
         this.cellState = this.pointwiseAddition(this.hadamardProduct(this.forgetGate.getLayerOutputs(), this.cellStateInput), this.hadamardProduct(this.inputGate.getLayerOutputs(), this.candidateCellState.getLayerOutputs()));
         this.hiddenState = this.hadamardProduct(this.outputGate.getLayerOutputs(), this.tanhFunction(this.cellState));
         this.hiddenState = this.sigmaFunction(this.hiddenState);
     }
 
-    public double[] getHiddenState(){
+    public double[] getHiddenState() {
         return this.hiddenState;
     }
 
-    public double[] getOutputVector(){
+    public double[] getOutputVector() {
         return this.hiddenState;
     }
 
-    public double[] getCellState(){
+    public double[] getCellState() {
         return this.cellState;
     }
 

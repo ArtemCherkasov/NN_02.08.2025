@@ -6,22 +6,22 @@ import java.util.List;
 import java.util.stream.DoubleStream;
 
 public class Layer {
-    private List<Node> nodes;
+    private final List<Node> nodes;
     private List<Bias> biases;
-    private int inputCount;
-    private int nodesCount;
+    private final int inputCount;
+    private final int nodesCount;
     private int biasesCount;
-    private int layerIndex;
-    private String layerName;
+    private final int layerIndex;
+    private final String layerName;
 
-    public Layer(int inputCount, int nodesCount, int biasesCount, int layerIndex){
+    public Layer(int inputCount, int nodesCount, int biasesCount, int layerIndex) {
         this.inputCount = inputCount;
         this.nodesCount = nodesCount;
         this.nodes = new ArrayList<Node>();
         if (biasesCount > 0) {
             this.biasesCount = biasesCount;
             this.biases = new ArrayList<Bias>(biasesCount);
-            for (int biasIndex = 0; biasIndex < biasesCount; biasIndex++){
+            for (int biasIndex = 0; biasIndex < biasesCount; biasIndex++) {
                 this.biases.add(new Bias());
             }
         }
@@ -32,6 +32,22 @@ public class Layer {
         this.layerName = CommonConstants.LAYER_NAME_PREFIX.concat(CommonConstants.WHITE_SPACE).concat(String.valueOf(layerIndex));
     }
 
+    public Layer(Layer layer) {
+        this.inputCount = layer.inputCount;
+        this.nodesCount = layer.nodesCount;
+        this.biasesCount = layer.biasesCount;
+        this.layerIndex = layer.layerIndex;
+        this.layerName = layer.layerName;
+        this.nodes = new ArrayList<Node>();
+        this.biases = new ArrayList<Bias>();
+        for (Node node : layer.nodes) {
+            this.nodes.add(new Node(node));
+        }
+        for (Bias bias : layer.biases) {
+            this.biases.add(new Bias(bias));
+        }
+    }
+
     public List<Node> getNodes() {
         return this.nodes;
     }
@@ -40,35 +56,35 @@ public class Layer {
         return this.nodes.get(nodeIndex);
     }
 
-    public void calculateLayerSigmaOutputs(){
+    public void calculateLayerSigmaOutputs() {
         for (int i = 0; i < this.nodesCount; i++) {
             this.nodes.get(i).calculateSigmaOutput();
         }
     }
 
-    public void calculateLayerTanhOutputs(){
+    public void calculateLayerTanhOutputs() {
         for (int i = 0; i < this.nodesCount; i++) {
             this.nodes.get(i).calculateHiberbolicTangentOutput();
         }
     }
 
-    public void setInputs(double[] inputs){
-        for(Node node : this.nodes){
+    public void setInputs(double[] inputs) {
+        for (Node node : this.nodes) {
             double[] _inputs = DoubleStream.concat(Arrays.stream(inputs), this.biases.stream().mapToDouble(bias -> bias.getValue())).toArray();
             node.setInputs(_inputs);
         }
     }
 
-    public double[] getLayerOutputs(){
+    public double[] getLayerOutputs() {
         return this.nodes.stream().mapToDouble(node -> node.getNodeValue()).toArray();
     }
 
-    public double[] getFlatInputs(){
+    public double[] getFlatInputs() {
         DoubleStream inputs = this.nodes.stream().flatMapToDouble(node -> DoubleStream.of(node.getInputs()));
         return inputs.toArray();
     }
 
-    public double[] getLayerSumFunctions(){
+    public double[] getLayerSumFunctions() {
         return this.nodes.stream().mapToDouble(node -> node.getSum()).toArray();
     }
 
@@ -92,10 +108,10 @@ public class Layer {
         return this.inputCount + this.biasesCount;
     }
 
-    public double getErrorFromAllNodes(int weightIndex){
+    public double getErrorFromAllNodes(int weightIndex) {
         double result = 0.0;
-        for(int nodeIndex = 0; nodeIndex < this.nodesCount; nodeIndex++){
-            double dE_dOutHidden = this.getNode(nodeIndex).getDeltaOfNode()*this.getNode(nodeIndex).getWeight(weightIndex);
+        for (int nodeIndex = 0; nodeIndex < this.nodesCount; nodeIndex++) {
+            double dE_dOutHidden = this.getNode(nodeIndex).getDeltaOfNode() * this.getNode(nodeIndex).getWeight(weightIndex);
             result = result + dE_dOutHidden;
         }
         return result;

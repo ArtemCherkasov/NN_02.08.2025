@@ -69,7 +69,7 @@ class NeuralNetworkLSTMTest {
         lstmRow.getCell(2).getOutputGate().getNode(2).setCustomWeights(new double[]{0.450, 0.455, 0.460, 0.465, 0.470, 0.475, 0.480, 0.485});
 
         nnLSTM = new NeuralNetworkLSTM(lstmRow);
-
+        nnLSTM.addLSTMRowsSeries(30);
     }
 
     @Test

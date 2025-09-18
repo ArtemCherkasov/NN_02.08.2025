@@ -6,10 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LSTMRow {
+    private final int lstmCellCount;
     List<LSTMCell> cellList;
-    private int lstmCellCount;
+    private int[] layersCountArray;
 
     public LSTMRow(int[] layersCountArray) {
+        this.layersCountArray = layersCountArray;
         this.lstmCellCount = layersCountArray.length;
         this.cellList = new ArrayList<LSTMCell>();
         this.cellList.add(new LSTMCell(layersCountArray[0], layersCountArray[0], 1, 0, CommonConstants.LSTM_CELL_NAME));
@@ -19,7 +21,11 @@ public class LSTMRow {
     }
 
     public LSTMRow(LSTMRow lstmRow) {
-        //TODO copy constructor
+        this.lstmCellCount = lstmRow.lstmCellCount;
+        this.cellList = new ArrayList<LSTMCell>();
+        for (LSTMCell lstmCell : lstmRow.cellList) {
+            this.cellList.add(new LSTMCell(lstmCell));
+        }
     }
 
     public List<LSTMCell> getCellList() {
@@ -30,11 +36,11 @@ public class LSTMRow {
         return this.cellList.get(cellIndex);
     }
 
-    public void setInputToLSTMRow(double[] inputVector){
+    public void setInputToLSTMRow(double[] inputVector) {
         this.getCell(CommonConstants.FIRST_CELL).setInputVectorX(inputVector);
     }
 
-    public void forwardPropogationRow(){
+    public void forwardPropogationRow() {
         this.getCell(CommonConstants.FIRST_CELL).forwardPropagation();
         for (int cellIndex = 1; cellIndex < this.lstmCellCount; cellIndex++) {
             this.getCell(cellIndex).setInputVectorX(this.getCell(cellIndex - 1).getHiddenState());
