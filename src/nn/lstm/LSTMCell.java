@@ -3,11 +3,12 @@ package nn.lstm;
 import exceptions.NNInputExceptions;
 import nn.common.CommonConstants;
 import nn.common.Layer;
+import nn.interfaces.LayerInterface;
 
 import java.util.Arrays;
 import java.util.Random;
 
-public class LSTMCell {
+public class LSTMCell implements LayerInterface {
     private final int gatesNodeCount;
     private final Layer forgetGate;
     private final Layer inputGate;
@@ -77,6 +78,18 @@ public class LSTMCell {
             throw new NNInputExceptions(CommonConstants.INCORRECT_INPUTS_COUNT);
         }
         this.hiddenStateInput = hiddenStateInput;
+    }
+
+    public double[] getCellStateInput() {
+        return this.cellStateInput;
+    }
+
+    public double[] getHiddenStateInput() {
+        return this.hiddenStateInput;
+    }
+
+    public double[] getInputVectorX() {
+        return this.inputVectorX;
     }
 
     public void setCellStateInput(double[] cellStateInput) {

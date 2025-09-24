@@ -1,11 +1,13 @@
 package nn.common;
 
+import nn.interfaces.LayerInterface;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.DoubleStream;
 
-public class Layer {
+public class Layer implements LayerInterface {
     private final List<Node> nodes;
     private List<Bias> biases;
     private final int inputCount;

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+
 class NeuralNetworkLSTMTest {
     public final static int FIRST_CELL_NODES_COUNT = 3;
     public final static int SECOND_CELL_NODES_COUNT = 4;
@@ -67,9 +69,7 @@ class NeuralNetworkLSTMTest {
         lstmRow.getCell(2).getInputGate().getNode(2).setCustomWeights(new double[]{0.370, 0.375, 0.380, 0.385, 0.390, 0.395, 0.400, 0.405});
         lstmRow.getCell(2).getCandidateCellState().getNode(2).setCustomWeights(new double[]{0.410, 0.415, 0.420, 0.425, 0.430, 0.435, 0.440, 0.445});
         lstmRow.getCell(2).getOutputGate().getNode(2).setCustomWeights(new double[]{0.450, 0.455, 0.460, 0.465, 0.470, 0.475, 0.480, 0.485});
-
         nnLSTM = new NeuralNetworkLSTM(lstmRow);
-        nnLSTM.addLSTMRowsSeries(30);
     }
 
     @Test
@@ -90,8 +90,20 @@ class NeuralNetworkLSTMTest {
     }
 
     @Test
-    void forwardPropogationLSRMRowTest() {
-        lstmRow.forwardPropogationRow();
+    void nnLSTMTest(){
+        nnLSTM.addLSTMRowsSeries(29);
+        nnLSTM.forwardPropogationRow();
+        int rowindex = 0;
+        for(LSTMRow row: nnLSTM.getLstmRowList()){
+            System.out.println("row index ".concat(String.valueOf(rowindex)));
+            rowindex++;
+            System.out.println("input x 0 ".concat(Arrays.toString(row.getCell(0).getInputVectorX())));
+            System.out.println("input x 1 ".concat(Arrays.toString(row.getCell(1).getInputVectorX())));
+            System.out.println("input x 2 ".concat(Arrays.toString(row.getCell(2).getInputVectorX())));
+            System.out.println("outputs cell 0 ".concat(Arrays.toString(row.getCell(0).getHiddenState())));
+            System.out.println("outputs cell 1 ".concat(Arrays.toString(row.getCell(1).getHiddenState())));
+            System.out.println("outputs cell 2 ".concat(Arrays.toString(row.getCell(2).getHiddenState())));
+        }
     }
 
 }

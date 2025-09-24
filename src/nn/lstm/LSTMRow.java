@@ -8,10 +8,8 @@ import java.util.List;
 public class LSTMRow {
     private final int lstmCellCount;
     List<LSTMCell> cellList;
-    private int[] layersCountArray;
 
     public LSTMRow(int[] layersCountArray) {
-        this.layersCountArray = layersCountArray;
         this.lstmCellCount = layersCountArray.length;
         this.cellList = new ArrayList<LSTMCell>();
         this.cellList.add(new LSTMCell(layersCountArray[0], layersCountArray[0], 1, 0, CommonConstants.LSTM_CELL_NAME));
@@ -43,9 +41,16 @@ public class LSTMRow {
     public void forwardPropogationRow() {
         this.getCell(CommonConstants.FIRST_CELL).forwardPropagation();
         for (int cellIndex = 1; cellIndex < this.lstmCellCount; cellIndex++) {
-            this.getCell(cellIndex).setInputVectorX(this.getCell(cellIndex - 1).getHiddenState());
+            this.getCell(cellIndex).setInputVectorX(this.getCell(cellIndex - 1).getOutputVector());
             this.getCell(cellIndex).forwardPropagation();
         }
     }
 
+    public double[] getLastLSTMCellOutput(){
+        return this.getCell(this.lstmCellCount - 1).getOutputVector();
+    }
+
+    public int getLstmCellCount() {
+        return this.lstmCellCount;
+    }
 }
