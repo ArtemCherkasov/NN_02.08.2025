@@ -39,7 +39,6 @@ class DataHelperTest {
                 e.printStackTrace();
             }
         }
-        double i = 0.0;
     }
 
     @Test
