@@ -1,5 +1,6 @@
 package nn.helpers;
 
+import exceptions.NNInputExceptions;
 import nn.common.CommonConstants;
 
 import java.text.ParseException;
@@ -7,7 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class MarketPriceHelper {
+public class MarketPrice {
     private final static int DATE_POS = 0;
     private final static int TIME_POS = 1;
     private final static int OPEN_POS = 2;
@@ -26,18 +27,19 @@ public class MarketPriceHelper {
     private double close;
     private double volume;
 
-    public MarketPriceHelper(String line) {
+    public MarketPrice(String line) {
+        line = line.replace(CommonConstants.DOUBLE_QUOTE, CommonConstants.EMPTY);
         String[] textArray = line.split(CommonConstants.TAB_SYMBOL);
-        this.open = Double.valueOf(textArray[OPEN_POS]);
-        this.high = Double.valueOf(textArray[HIGH_POS]);
-        this.low = Double.valueOf(textArray[LOW_POS]);
-        this.close = Double.valueOf(textArray[CLOSE_POS]);
-        this.volume = Double.valueOf(textArray[VOLUME_POS]);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.M.dd hh:mm:ss");
         try {
+            this.open = Double.valueOf(textArray[OPEN_POS]);
+            this.high = Double.valueOf(textArray[HIGH_POS]);
+            this.low = Double.valueOf(textArray[LOW_POS]);
+            this.close = Double.valueOf(textArray[CLOSE_POS]);
+            this.volume = Double.valueOf(textArray[VOLUME_POS]);
             this.date = simpleDateFormat.parse(textArray[DATE_POS].concat(CommonConstants.WHITE_SPACE).concat(textArray[TIME_POS]));
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            throw new NNInputExceptions(CommonConstants.INCORRECT_MERKET_PRICE_DATA);
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(this.date);

@@ -1,6 +1,6 @@
 package junit;
 
-import nn.helpers.MarketPriceHelper;
+import nn.helpers.MarketPrice;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,23 +10,23 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 class MarketPriceTest {
-    public final static double OPEN = 1.40954;
-    public final static double HIGH = 1.41129;
-    public final static double LOW = 1.40929;
-    public final static double CLOSE = 1.41069;
-    public final static double VOLUME = 1002;
-    public final static String DATE_TIME = "2009.06.12 10:15:00";
-    public final static int MONTH = 5;
-    public final static int MONTH_DAY = 12;
-    public final static String PRICE_TEXT = "2009.06.12\t10:15:00\t1.40954\t1.41129\t1.40929\t1.41069\t1002\t0\t20";
+    private final static double OPEN = 1.40954;
+    private final static double HIGH = 1.41129;
+    private final static double LOW = 1.40929;
+    private final static double CLOSE = 1.41069;
+    private final static double VOLUME = 1002;
+    private final static String DATE_TIME = "2009.06.12 10:15:00";
+    private final static int MONTH = 5;
+    private final static int MONTH_DAY = 12;
+    private final static String PRICE_TEXT = "2009.06.12\t10:15:00\t1.40954\t1.41129\t1.40929\t1.41069\t1002\t0\t20";
 
-    MarketPriceHelper marketPrice;
+    MarketPrice marketPrice;
     SimpleDateFormat dateTimeFormat;
     Date dateTime;
 
     @BeforeEach
-    public void initNetwork() {
-        marketPrice = new MarketPriceHelper(PRICE_TEXT);
+    public void initMarketPriceHelper() {
+        marketPrice = new MarketPrice(PRICE_TEXT);
         dateTimeFormat = new SimpleDateFormat("yyyy.M.dd hh:mm:ss");
         try {
             dateTime = dateTimeFormat.parse(DATE_TIME);
@@ -37,7 +37,7 @@ class MarketPriceTest {
     }
 
     @Test
-    void networkConfigurationTest() {
+    void marketPriceHelperTest() {
         Assertions.assertEquals(OPEN, marketPrice.getOpen());
         Assertions.assertEquals(HIGH, marketPrice.getHigh());
         Assertions.assertEquals(LOW, marketPrice.getLow());

@@ -10,12 +10,12 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 class NeuralNetworkSimpleTest {
-    public final static int FIRST_LAYER_NODES_COUNT = 2;
-    public final static int SECOND_LAYER_NODES_COUNT = 2;
-    public final static double FIRST_INPUT_TO_NETWORK = 0.05;
-    public final static double SECOND_INPUT_TO_NETWORK = 0.1;
-    public final static double FIRST_OUTPUT_FROM_NETWORK = 0.01;
-    public final static double SECOND_OUTPUT_FROM_NETWORK = 0.99;
+    private final static int FIRST_LAYER_NODES_COUNT = 2;
+    private final static int SECOND_LAYER_NODES_COUNT = 2;
+    private final static double FIRST_INPUT_TO_NETWORK = 0.05;
+    private final static double SECOND_INPUT_TO_NETWORK = 0.1;
+    private final static double FIRST_OUTPUT_FROM_NETWORK = 0.01;
+    private final static double SECOND_OUTPUT_FROM_NETWORK = 0.99;
 
     NeuralNetworkSimple neuralNetwork;
 
@@ -39,7 +39,7 @@ class NeuralNetworkSimpleTest {
     }
 
     @Test
-    void calculationLayersTest(){
+    void calculationLayersTest() {
         neuralNetwork.getLayer(0).getNode(0).setCustomWeights(new double[]{0.15, 0.20, 0.35});
         neuralNetwork.getLayer(0).getNode(1).setCustomWeights(new double[]{0.25, 0.30, 0.35});
         neuralNetwork.getLayer(1).getNode(0).setCustomWeights(new double[]{0.40, 0.45, 0.60});
@@ -72,7 +72,7 @@ class NeuralNetworkSimpleTest {
         neuralNetwork.forwardPropagation();
         error = neuralNetwork.getErrorTotal(new double[]{FIRST_OUTPUT_FROM_NETWORK, SECOND_OUTPUT_FROM_NETWORK});
         Assertions.assertEquals(BigDecimal.valueOf(0.291027774), BigDecimal.valueOf(error).setScale(9, RoundingMode.HALF_UP));
-        for (int i = 2; i < 10000; i++){
+        for (int i = 2; i < 10000; i++) {
             neuralNetwork.calculateWeightDeltaLastLayer(new double[]{FIRST_OUTPUT_FROM_NETWORK, SECOND_OUTPUT_FROM_NETWORK});
             neuralNetwork.calculateWeightDeltaHiddenLayers();
             neuralNetwork.weightUpdate();

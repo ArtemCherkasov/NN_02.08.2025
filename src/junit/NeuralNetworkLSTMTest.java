@@ -7,9 +7,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class NeuralNetworkLSTMTest {
-    public final static int FIRST_CELL_NODES_COUNT = 3;
-    public final static int SECOND_CELL_NODES_COUNT = 4;
-    public final static int THIRD_CELL_NODES_COUNT = 3;
+    private final static int FIRST_CELL_NODES_COUNT = 3;
+    private final static int SECOND_CELL_NODES_COUNT = 4;
+    private final static int THIRD_CELL_NODES_COUNT = 3;
 
     LSTMRow lstmRow;
     NeuralNetworkLSTM nnLSTM;
