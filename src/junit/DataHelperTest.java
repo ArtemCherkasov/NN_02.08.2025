@@ -2,6 +2,7 @@ package junit;
 
 import nn.helpers.DataHelper;
 import nn.helpers.MarketPrice;
+import nn.helpers.PriceSigmaConverter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,5 +51,11 @@ class DataHelperTest {
         Assertions.assertEquals(VOLUME, marketPrices.get(88000).getVolume());
         Assertions.assertEquals(MONTH, marketPrices.get(88000).getMonth());
         Assertions.assertEquals(MONTH_DAY, marketPrices.get(88000).getDay_of_month());
+        PriceSigmaConverter ps = new PriceSigmaConverter();
+        ps.maxDeviation(marketPrices);
+        Assertions.assertEquals(0.75, ps.deltaPriceConvertedToSigma(0.00085));
+        Assertions.assertEquals(0.25, ps.deltaPriceConvertedToSigma(-0.00085));
+        Assertions.assertEquals(0.00085, ps.sigmaToDeltaPrice(0.75));
+        Assertions.assertEquals(-0.00085, ps.sigmaToDeltaPrice(0.25));
     }
 }
