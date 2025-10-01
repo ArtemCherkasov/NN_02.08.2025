@@ -16,6 +16,7 @@ public class CommonConstants {
     public final static double BIAS_DEFAULT_VALUE = 1.0;
     public final static double LEARNING_RATE_DEFAULT_VALUE = 0.5;
     public final static String LSTM_CELL_NAME = "LSTM cell";
+    public final static String LAST_LAYER_NAME = "Last layer";
     public final static String TAB = "  ";
     public final static String TAB_SYMBOL = "\t";
 }

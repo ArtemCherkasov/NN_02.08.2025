@@ -25,6 +25,8 @@ public class LSTMCell implements LayerInterface {
         this.inputVectorX = new double[inputCount];
         this.cellStateInput = new double[gatesNodeCount];
         this.hiddenStateInput = new double[gatesNodeCount];
+        this.cellState = new double[gatesNodeCount];
+        this.hiddenState = new double[gatesNodeCount];
         this.forgetGate = new Layer(inputCount + gatesNodeCount, gatesNodeCount, biasesCount, layerIndex);
         this.inputGate = new Layer(inputCount + gatesNodeCount, gatesNodeCount, biasesCount, layerIndex);
         this.candidateCellState = new Layer(inputCount + gatesNodeCount, gatesNodeCount, biasesCount, layerIndex);
@@ -62,41 +64,44 @@ public class LSTMCell implements LayerInterface {
     }
 
     public void setInitialState(double[] hiddenStateInput, double[] cellStateInput) {
-        this.hiddenStateInput = hiddenStateInput;
-        this.cellStateInput = cellStateInput;
-    }
-
-    public void setInputVectorX(double[] inputVectorX) {
-        if (this.inputVectorX.length != inputVectorX.length) {
-            throw new NNInputExceptions(CommonConstants.INCORRECT_INPUTS_COUNT);
-        }
-        this.inputVectorX = inputVectorX;
-    }
-
-    public void setHiddenStateInput(double[] hiddenStateInput) {
-        if (this.hiddenStateInput.length != hiddenStateInput.length) {
-            throw new NNInputExceptions(CommonConstants.INCORRECT_INPUTS_COUNT);
-        }
-        this.hiddenStateInput = hiddenStateInput;
+        this.hiddenStateInput = new double[hiddenStateInput.length];
+        this.cellStateInput = new double[cellStateInput.length];
+        this.hiddenStateInput = hiddenStateInput.clone();
+        this.cellStateInput = cellStateInput.clone();
     }
 
     public double[] getCellStateInput() {
         return this.cellStateInput;
     }
 
+    public void setCellStateInput(double[] cellStateInput) {
+        if (this.cellStateInput.length != cellStateInput.length) {
+            throw new NNInputExceptions(CommonConstants.INCORRECT_INPUTS_COUNT);
+        }
+
+        this.cellStateInput = cellStateInput.clone();
+    }
+
     public double[] getHiddenStateInput() {
         return this.hiddenStateInput;
+    }
+
+    public void setHiddenStateInput(double[] hiddenStateInput) {
+        if (this.hiddenStateInput.length != hiddenStateInput.length) {
+            throw new NNInputExceptions(CommonConstants.INCORRECT_INPUTS_COUNT);
+        }
+        this.hiddenStateInput = hiddenStateInput.clone();
     }
 
     public double[] getInputVectorX() {
         return this.inputVectorX;
     }
 
-    public void setCellStateInput(double[] cellStateInput) {
-        if (this.cellStateInput.length != cellStateInput.length) {
+    public void setInputVectorX(double[] inputVectorX) {
+        if (this.inputVectorX.length != inputVectorX.length) {
             throw new NNInputExceptions(CommonConstants.INCORRECT_INPUTS_COUNT);
         }
-        this.cellStateInput = cellStateInput;
+        this.inputVectorX = inputVectorX.clone();
     }
 
     public double[] concatenateArrays(double[]... arrays) {
@@ -158,7 +163,9 @@ public class LSTMCell implements LayerInterface {
 
     public void forwardPropagation() {
         this.calculateAllGates();
-        this.cellState = this.pointwiseAddition(this.hadamardProduct(this.forgetGate.getLayerOutputs(), this.cellStateInput), this.hadamardProduct(this.inputGate.getLayerOutputs(), this.candidateCellState.getLayerOutputs()));
+        this.cellState = this.hadamardProduct(this.forgetGate.getLayerOutputs(), this.cellStateInput);
+        double[] hadamardProductInputGateCandidateGate = this.hadamardProduct(this.inputGate.getLayerOutputs(), this.candidateCellState.getLayerOutputs());
+        this.cellState = this.pointwiseAddition(this.cellState, hadamardProductInputGateCandidateGate);
         this.hiddenState = this.hadamardProduct(this.outputGate.getLayerOutputs(), this.tanhFunction(this.cellState));
         this.hiddenState = this.sigmaFunction(this.hiddenState);
     }

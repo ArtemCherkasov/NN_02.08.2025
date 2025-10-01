@@ -1,4 +1,4 @@
-package nn.helpers;
+package nn.helpers.eurusd;
 
 import java.util.List;
 
@@ -17,13 +17,13 @@ public class PriceSigmaConverter {
     public PriceSigmaConverter() {
     }
 
-    public void maxDeviation(List<MarketPrice> marketPrices) {
+    public void maxDeviation(List<MarketPriceEURUSD> marketPrices) {
         for (int i = 1; i < marketPrices.size(); i++) {
             averagePrice = averagePrice + marketPrices.get(i).getClose();
         }
         int n = 0;
         int m = 0;
-        for (MarketPrice mp : marketPrices) {
+        for (MarketPriceEURUSD mp : marketPrices) {
             if (0 < (mp.getHigh() - mp.getOpen())) {
                 n++;
                 averageHeightDeviation = averageHeightDeviation + (mp.getHigh() - mp.getClose());

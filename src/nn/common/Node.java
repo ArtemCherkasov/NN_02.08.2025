@@ -23,13 +23,16 @@ public class Node {
     }
 
     public Node(Node node) {
-        this.inputs = node.inputs;
-        this.weights = node.weights;
+        this.inputs = new double[node.inputs.length];
+        this.inputs = node.inputs.clone();
+        this.weights = new double[node.weights.length];
+        this.weights = node.weights.clone();
         this.sum = node.sum;
         this.nodeValue = node.nodeValue;
         this.inputCount = node.inputCount;
         this.deltaOfNode = node.deltaOfNode;
-        this.deltaOfWeight = node.deltaOfWeight;
+        this.deltaOfWeight = new double[node.deltaOfWeight.length];
+        this.deltaOfWeight = node.deltaOfWeight.clone();
     }
 
     public double[] getInputs() {
@@ -37,7 +40,7 @@ public class Node {
     }
 
     public void setInputs(double[] x) {
-        this.inputs = x;
+        this.inputs = x.clone();
     }
 
     public double getInput(int inputIndex) {
@@ -75,7 +78,7 @@ public class Node {
         if (this.weights.length != weights.length) {
             throw new NNInputExceptions(CommonConstants.INCORRECT_INPUTS_COUNT, weights.length, this.weights.length);
         }
-        this.weights = weights;
+        this.weights = weights.clone();
     }
 
     public void setCustomWeight(int weigthIndex, double weight) {

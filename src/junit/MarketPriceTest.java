@@ -1,6 +1,6 @@
 package junit;
 
-import nn.helpers.MarketPrice;
+import nn.helpers.eurusd.MarketPriceEURUSD;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,13 +20,13 @@ class MarketPriceTest {
     private final static int MONTH_DAY = 12;
     private final static String PRICE_TEXT = "2009.06.12\t10:15:00\t1.40954\t1.41129\t1.40929\t1.41069\t1002\t0\t20";
 
-    MarketPrice marketPrice;
+    MarketPriceEURUSD marketPrice;
     SimpleDateFormat dateTimeFormat;
     Date dateTime;
 
     @BeforeEach
     public void initMarketPriceHelper() {
-        marketPrice = new MarketPrice(PRICE_TEXT);
+        marketPrice = new MarketPriceEURUSD(PRICE_TEXT);
         dateTimeFormat = new SimpleDateFormat("yyyy.M.dd hh:mm:ss");
         try {
             dateTime = dateTimeFormat.parse(DATE_TIME);

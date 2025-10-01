@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NeuralNetworkLSTM {
-    private final LSTMRow masterRow;
-    private List<LSTMRow> lstmRowList;
     private final static int ROWS_COUNT_DEFAULT = 1;
+    private final LSTMRow masterRow;
+    private final List<LSTMRow> lstmRowList;
     private int rowsCount;
 
     public NeuralNetworkLSTM(int[] layersCountArray) {
@@ -48,7 +48,7 @@ public class NeuralNetworkLSTM {
         return this.rowsCount;
     }
 
-    public LSTMRow getLastRow(){
+    public LSTMRow getLastRow() {
         return this.lstmRowList.get(this.rowsCount - 1);
     }
 
@@ -56,10 +56,10 @@ public class NeuralNetworkLSTM {
         return this.lstmRowList;
     }
 
-    public void forwardPropogationRow(){
+    public void forwardPropogationRow() {
         this.lstmRowList.get(0).forwardPropogationRow();
-        for(int rowIndex = 1; rowIndex < this.rowsCount; rowIndex++){
-            for(int cellIndex = 0; cellIndex < this.lstmRowList.get(rowIndex).getLstmCellCount(); cellIndex++){
+        for (int rowIndex = 1; rowIndex < this.rowsCount; rowIndex++) {
+            for (int cellIndex = 0; cellIndex < this.lstmRowList.get(rowIndex).getLstmCellCount(); cellIndex++) {
                 this.lstmRowList.get(rowIndex).getCell(cellIndex).setCellStateInput(this.lstmRowList.get(rowIndex - 1).getCell(cellIndex).getCellState());
                 this.lstmRowList.get(rowIndex).getCell(cellIndex).setHiddenStateInput(this.lstmRowList.get(rowIndex - 1).getCell(cellIndex).getHiddenState());
                 this.lstmRowList.get(rowIndex).forwardPropogationRow();
