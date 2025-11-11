@@ -3,6 +3,7 @@ package junit;
 import nn.common.Node;
 import nn.helpers.DataHelper;
 import nn.helpers.eurusd.MarketPriceEURUSD;
+import nn.helpers.eurusd.PriceSigmaConverter;
 import nn.lstm.LSTMCell;
 import nn.lstm.LSTMRow;
 import nn.lstm.NeuralNetworkLSTM;
@@ -84,7 +85,8 @@ class NeuralNetworkLSTMEURUSDTest {
 
     @Test
     void nnLSTMTest() {
-        nnLSTM.forwardPropogationRow();
+        nnLSTM.forwardPropagationRow();
+        PriceSigmaConverter ps = new PriceSigmaConverter();
         Assertions.assertEquals(0.9380921371519626, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[0]);
         Assertions.assertEquals(0.9380951995116282, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[1]);
         Assertions.assertEquals(0.9380962646036628, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[2]);

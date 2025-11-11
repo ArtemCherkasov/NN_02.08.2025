@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class NeuralNetworkLSTMTest {
+class NeuralNetworkLSTMForwardPropagationTest {
     private final static int FIRST_CELL_NODES_COUNT = 3;
     private final static int SECOND_CELL_NODES_COUNT = 4;
     private final static int THIRD_CELL_NODES_COUNT = 3;
@@ -90,7 +90,7 @@ class NeuralNetworkLSTMTest {
 
     @Test
     void nnLSTMTest() {
-        nnLSTM.forwardPropogationRow();
+        nnLSTM.forwardPropagationRow();
         Assertions.assertEquals(0.8477110297523782, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[0]);
         Assertions.assertEquals(0.9221331634583193, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[1]);
         Assertions.assertEquals(0.9330582988880746, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[2]);

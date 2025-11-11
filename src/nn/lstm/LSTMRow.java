@@ -42,7 +42,7 @@ public class LSTMRow {
         this.getCell(CommonConstants.FIRST_CELL).setInputVectorX(inputVector);
     }
 
-    public void forwardPropogationRow() {
+    public void forwardPropagationRow() {
         this.getCell(CommonConstants.FIRST_CELL).forwardPropagation();
         for (int cellIndex = 1; cellIndex < this.lstmCellCount; cellIndex++) {
             double[] outputVector = this.getCell(cellIndex - 1).getOutputVector();

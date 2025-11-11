@@ -56,13 +56,13 @@ public class NeuralNetworkLSTM {
         return this.lstmRowList;
     }
 
-    public void forwardPropogationRow() {
-        this.lstmRowList.get(0).forwardPropogationRow();
+    public void forwardPropagationRow() {
+        this.lstmRowList.get(0).forwardPropagationRow();
         for (int rowIndex = 1; rowIndex < this.rowsCount; rowIndex++) {
             for (int cellIndex = 0; cellIndex < this.lstmRowList.get(rowIndex).getLstmCellCount(); cellIndex++) {
                 this.lstmRowList.get(rowIndex).getCell(cellIndex).setCellStateInput(this.lstmRowList.get(rowIndex - 1).getCell(cellIndex).getCellState());
                 this.lstmRowList.get(rowIndex).getCell(cellIndex).setHiddenStateInput(this.lstmRowList.get(rowIndex - 1).getCell(cellIndex).getHiddenState());
-                this.lstmRowList.get(rowIndex).forwardPropogationRow();
+                this.lstmRowList.get(rowIndex).forwardPropagationRow();
             }
         }
     }

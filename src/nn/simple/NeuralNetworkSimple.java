@@ -98,7 +98,7 @@ public class NeuralNetworkSimple {
                 double dOutHidden_dNetHidden = this.getLayer(layerIndex).getNode(outputIndex).getNodeValue() * (1.0 - this.getLayer(layerIndex).getNode(outputIndex).getNodeValue());
                 this.getLayer(layerIndex).getNode(outputIndex).setDeltaOfNode(dE_dOutHidden * dOutHidden_dNetHidden);
                 double[] dE_dWeightArray = new double[this.getLayer(layerIndex).getInputAndBiasesCount()];
-                for (int inputIndex = 0; inputIndex < this.getLastLayer().getInputAndBiasesCount(); inputIndex++) {
+                for (int inputIndex = 0; inputIndex < this.getLayer(layerIndex).getInputAndBiasesCount(); inputIndex++) {
                     dE_dWeightArray[inputIndex] = this.learningRate * this.getLayer(layerIndex).getNode(outputIndex).getDeltaOfNode() * this.getLayer(layerIndex).getNode(outputIndex).getInput(inputIndex);
                 }
                 this.getLayer(layerIndex).getNode(outputIndex).setDeltaOfWeight(dE_dWeightArray);
