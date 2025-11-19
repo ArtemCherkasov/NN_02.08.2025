@@ -188,6 +188,11 @@ public class LSTMCell implements LayerInterface {
         return c;
     }
 
+    /**
+     * function (a*(1 - a))
+     * @param a
+     * @return double[]
+     */
     public double[] subtractSquareOfXfromX(double[] a) {
         int vectorLength = a.length;
         double[] c = new double[vectorLength];
