@@ -17,6 +17,7 @@ class NeuralNetworkLSTMBackpropagationThroughTimeTest {
         lstmRow = new LSTMRow(new int[]{FIRST_CELL_NODES_COUNT});
         lstmRow.setInputToLSTMRow(new double[]{0.05, 0.10});
         nnLSTM = new NeuralNetworkLSTM(lstmRow);
+        nnLSTM.addLSTMRowsSeries(1);
     }
 
     @Test
