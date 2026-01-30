@@ -19,27 +19,28 @@ public class LSTMCell implements LayerInterface {
     private double[] hiddenStateInput;
     private double[] hiddenState;
     private double[] inputVectorX;
+    private double[] targetPredictionVector;
 
     //back propagation fields
-    private double[] dEdOutput;
+    private double[] dEdOutputGate;
     private double[] dEdCellState;
     private double[] dEdHiddenState;
-    private double[] dEdInput;
-    private double[] dEdCandidateCellState;
-    private double[] dEdForget;
+    private double[] dEdInputGate;
+    private double[] dEdCandidateCellStateGate;
+    private double[] dEdForgetGate;
     private double[] dEdCellStateInput;
-    private double[] dEdWInputVectorXOutput;
-    private double[] dEdWInputVectorXInput;
-    private double[] dEdWInputVectorXForget;
-    private double[] dEdWInputVectorXCandidate;
-    private double[] dEdWHiddenStateInputOutput;
-    private double[] dEdWHiddenStateInputInput;
-    private double[] dEdWHiddenStateInputForget;
-    private double[] dEdWHiddenStateInputCandidate;
-    private double[] dEdWBiasOutput;
-    private double[] dEdWBiasInput;
-    private double[] dEdWBiasForget;
-    private double[] dEdWBiasCandidate;
+    private double[] dEdWInputVectorXOutputGate;
+    private double[] dEdWInputVectorXInputGate;
+    private double[] dEdWInputVectorXForgetGate;
+    private double[] dEdWInputVectorXCandidateCellStateGate;
+    private double[] dEdWHiddenStateInputOutputGate;
+    private double[] dEdWHiddenStateInputInputGate;
+    private double[] dEdWHiddenStateInputForgetGate;
+    private double[] dEdWHiddenStateInputCandidateCellStateGate;
+    private double[] dEdWBiasOutputGate;
+    private double[] dEdWBiasInputGate;
+    private double[] dEdWBiasForgetGate;
+    private double[] dEdWBiasCandidateCellStateGate;
 
     public LSTMCell(int inputCount, int gatesNodeCount, int biasesCount, int layerIndex, String layerName) {
         this.gatesNodeCount = gatesNodeCount;
@@ -164,36 +165,36 @@ public class LSTMCell implements LayerInterface {
         return c;
     }
 
-    public double[] tanhFunction(double[] a) {
+    public double[] tanhFunctionVector(double[] a) {
         int vectorLength = a.length;
         double[] c = new double[vectorLength];
         for (int vectorIndex = 0; vectorIndex < vectorLength; vectorIndex++) {
-            c[vectorIndex] = (Math.exp(a[vectorIndex]) - Math.exp(-1 * a[vectorIndex])) / (Math.exp(a[vectorIndex]) + Math.exp(-1 * a[vectorIndex]));
+            c[vectorIndex] = Math.tanh(a[vectorIndex]);
         }
         return c;
     }
 
     /**
-     * function (1 - tan^2(a))
+     * Derivative of the hyperbolic tangent function (1 - tan^2(a))
      *
      * @param a
      * @return double[]
      */
-    public double[] oneSubtractTanhFunctionSqr(double[] a) {
+    public double[] derivativeTanhFunctionVector(double[] a) {
         int vectorLength = a.length;
         double[] c = new double[vectorLength];
         for (int vectorIndex = 0; vectorIndex < vectorLength; vectorIndex++) {
-            c[vectorIndex] = 1.0 - Math.pow((Math.exp(a[vectorIndex]) - Math.exp(-1 * a[vectorIndex])) / (Math.exp(a[vectorIndex]) + Math.exp(-1 * a[vectorIndex])), 2.0);
+            c[vectorIndex] = 1.0 - Math.pow(Math.tanh(a[vectorIndex]), 2.0);
         }
         return c;
     }
 
     /**
-     * function (a*(1 - a))
+     * Derivative of the sigmoid function (a*(1 - a))
      * @param a
      * @return double[]
      */
-    public double[] subtractSquareOfXfromX(double[] a) {
+    public double[] derivativeSigmoidFunctionVector(double[] a) {
         int vectorLength = a.length;
         double[] c = new double[vectorLength];
         for (int vectorIndex = 0; vectorIndex < vectorLength; vectorIndex++) {
@@ -216,29 +217,37 @@ public class LSTMCell implements LayerInterface {
         this.cellState = this.hadamardProduct(this.forgetGate.getLayerOutputs(), this.cellStateInput);
         double[] hadamardProductInputGateCandidateGate = this.hadamardProduct(this.inputGate.getLayerOutputs(), this.candidateCellState.getLayerOutputs());
         this.cellState = this.pointwiseAddition(this.cellState, hadamardProductInputGateCandidateGate);
-        this.hiddenState = this.hadamardProduct(this.outputGate.getLayerOutputs(), this.tanhFunction(this.cellState));
+        this.hiddenState = this.hadamardProduct(this.outputGate.getLayerOutputs(), this.tanhFunctionVector(this.cellState));
         this.hiddenState = this.sigmaFunction(this.hiddenState);
     }
 
     public void cellDerivativesCalculate() {
-        this.dEdOutput = this.hadamardProduct(this.dEdHiddenState, this.tanhFunction(this.cellState));
-        this.dEdCellState = this.hadamardProduct(this.hadamardProduct(this.dEdHiddenState, this.outputGate.getLayerOutputs()), this.oneSubtractTanhFunctionSqr(this.cellState));
-        this.dEdInput = this.hadamardProduct(this.dEdCellState, this.candidateCellState.getLayerOutputs());
-        this.dEdCandidateCellState = this.hadamardProduct(this.dEdCellState, this.inputGate.getLayerOutputs());
-        this.dEdForget = this.hadamardProduct(this.dEdCellState, this.cellStateInput);
+        this.dEdOutputGate = this.hadamardProduct(this.dEdHiddenState, this.tanhFunctionVector(this.cellState));
+        this.dEdCellState = this.hadamardProduct(this.hadamardProduct(this.dEdHiddenState, this.outputGate.getLayerOutputs()), this.derivativeTanhFunctionVector(this.cellState));
+        this.dEdInputGate = this.hadamardProduct(this.dEdCellState, this.candidateCellState.getLayerOutputs());
+        this.dEdCandidateCellStateGate = this.hadamardProduct(this.dEdCellState, this.inputGate.getLayerOutputs());
+        this.dEdForgetGate = this.hadamardProduct(this.dEdCellState, this.cellStateInput);
         this.dEdCellStateInput = this.hadamardProduct(this.dEdCellState, this.forgetGate.getLayerOutputs());
-        this.dEdWInputVectorXOutput = this.hadamardProduct(this.hadamardProduct(this.dEdOutput, this.subtractSquareOfXfromX(this.outputGate.getLayerOutputs())), this.inputVectorX);
-        this.dEdWHiddenStateInputOutput = this.hadamardProduct(this.hadamardProduct(this.dEdOutput, this.subtractSquareOfXfromX(this.outputGate.getLayerOutputs())), this.hiddenStateInput);
-        this.dEdWBiasOutput = this.hadamardProduct(this.dEdOutput, this.subtractSquareOfXfromX(this.outputGate.getLayerOutputs()));
-        this.dEdWInputVectorXInput = this.hadamardProduct(this.hadamardProduct(this.dEdInput, this.subtractSquareOfXfromX(this.inputGate.getLayerOutputs())), this.inputVectorX);
-        this.dEdWHiddenStateInputInput = this.hadamardProduct(this.hadamardProduct(this.dEdInput, this.subtractSquareOfXfromX(this.inputGate.getLayerOutputs())), this.hiddenStateInput);
-        this.dEdWBiasInput = this.hadamardProduct(this.dEdInput, this.subtractSquareOfXfromX(this.inputGate.getLayerOutputs()));
-        this.dEdWInputVectorXForget = this.hadamardProduct(this.hadamardProduct(this.dEdForget, this.subtractSquareOfXfromX(this.forgetGate.getLayerOutputs())), this.inputVectorX);
-        this.dEdWHiddenStateInputForget = this.hadamardProduct(this.hadamardProduct(this.dEdForget, this.subtractSquareOfXfromX(this.forgetGate.getLayerOutputs())), this.hiddenStateInput);
-        this.dEdWBiasForget = this.hadamardProduct(this.dEdForget, this.subtractSquareOfXfromX(this.forgetGate.getLayerOutputs()));
-        this.dEdWInputVectorXCandidate = this.hadamardProduct(this.hadamardProduct(this.dEdCandidateCellState, this.subtractSquareOfXfromX(this.candidateCellState.getLayerOutputs())), this.inputVectorX);
-        this.dEdWHiddenStateInputCandidate = this.hadamardProduct(this.hadamardProduct(this.dEdCandidateCellState, this.subtractSquareOfXfromX(this.candidateCellState.getLayerOutputs())), this.hiddenStateInput);
-        this.dEdWBiasCandidate = this.hadamardProduct(this.dEdCandidateCellState, this.subtractSquareOfXfromX(this.candidateCellState.getLayerOutputs()));
+        this.dEdWInputVectorXOutputGate = this.hadamardProduct(this.hadamardProduct(this.dEdOutputGate, this.derivativeSigmoidFunctionVector(this.outputGate.getLayerOutputs())), this.inputVectorX);
+        this.dEdWHiddenStateInputOutputGate = this.hadamardProduct(this.hadamardProduct(this.dEdOutputGate, this.derivativeSigmoidFunctionVector(this.outputGate.getLayerOutputs())), this.hiddenStateInput);
+        this.dEdWBiasOutputGate = this.hadamardProduct(this.dEdOutputGate, this.derivativeSigmoidFunctionVector(this.outputGate.getLayerOutputs()));
+        this.dEdWInputVectorXInputGate = this.hadamardProduct(this.hadamardProduct(this.dEdInputGate, this.derivativeSigmoidFunctionVector(this.inputGate.getLayerOutputs())), this.inputVectorX);
+        this.dEdWHiddenStateInputInputGate = this.hadamardProduct(this.hadamardProduct(this.dEdInputGate, this.derivativeSigmoidFunctionVector(this.inputGate.getLayerOutputs())), this.hiddenStateInput);
+        this.dEdWBiasInputGate = this.hadamardProduct(this.dEdInputGate, this.derivativeSigmoidFunctionVector(this.inputGate.getLayerOutputs()));
+        this.dEdWInputVectorXForgetGate = this.hadamardProduct(this.hadamardProduct(this.dEdForgetGate, this.derivativeSigmoidFunctionVector(this.forgetGate.getLayerOutputs())), this.inputVectorX);
+        this.dEdWHiddenStateInputForgetGate = this.hadamardProduct(this.hadamardProduct(this.dEdForgetGate, this.derivativeSigmoidFunctionVector(this.forgetGate.getLayerOutputs())), this.hiddenStateInput);
+        this.dEdWBiasForgetGate = this.hadamardProduct(this.dEdForgetGate, this.derivativeSigmoidFunctionVector(this.forgetGate.getLayerOutputs()));
+        this.dEdWInputVectorXCandidateCellStateGate = this.hadamardProduct(this.hadamardProduct(this.dEdCandidateCellStateGate, this.derivativeTanhFunctionVector(this.candidateCellState.getLayerOutputs())), this.inputVectorX);
+        this.dEdWHiddenStateInputCandidateCellStateGate = this.hadamardProduct(this.hadamardProduct(this.dEdCandidateCellStateGate, this.derivativeTanhFunctionVector(this.candidateCellState.getLayerOutputs())), this.hiddenStateInput);
+        this.dEdWBiasCandidateCellStateGate = this.hadamardProduct(this.dEdCandidateCellStateGate, this.derivativeTanhFunctionVector(this.candidateCellState.getLayerOutputs()));
+    }
+
+    public double[] getTargetPredictionVector() {
+        return this.targetPredictionVector;
+    }
+
+    public void setTargetPredictionVector(double[] targetPredictionVector) {
+        this.targetPredictionVector = targetPredictionVector;
     }
 
     public double[] getHiddenState() {
@@ -269,12 +278,12 @@ public class LSTMCell implements LayerInterface {
         return outputGate;
     }
 
-    public double[] getdEdOutput() {
-        return dEdOutput;
+    public double[] getdEdOutputGate() {
+        return dEdOutputGate;
     }
 
-    public void setdEdOutput(double[] dEdOutput) {
-        this.dEdOutput = dEdOutput;
+    public void setdEdOutputGate(double[] dEdOutputGate) {
+        this.dEdOutputGate = dEdOutputGate;
     }
 
     public double[] getdEdCellState() {
@@ -293,28 +302,28 @@ public class LSTMCell implements LayerInterface {
         this.dEdHiddenState = dEdHiddenState;
     }
 
-    public double[] getdEdInput() {
-        return dEdInput;
+    public double[] getdEdInputGate() {
+        return dEdInputGate;
     }
 
-    public void setdEdInput(double[] dEdInput) {
-        this.dEdInput = dEdInput;
+    public void setdEdInputGate(double[] dEdInputGate) {
+        this.dEdInputGate = dEdInputGate;
     }
 
-    public double[] getdEdCandidateCellState() {
-        return dEdCandidateCellState;
+    public double[] getdEdCandidateCellStateGate() {
+        return dEdCandidateCellStateGate;
     }
 
-    public void setdEdCandidateCellState(double[] dEdCandidateCellState) {
-        this.dEdCandidateCellState = dEdCandidateCellState;
+    public void setdEdCandidateCellStateGate(double[] dEdCandidateCellStateGate) {
+        this.dEdCandidateCellStateGate = dEdCandidateCellStateGate;
     }
 
-    public double[] getdEdForget() {
-        return dEdForget;
+    public double[] getdEdForgetGate() {
+        return dEdForgetGate;
     }
 
-    public void setdEdForget(double[] dEdForget) {
-        this.dEdForget = dEdForget;
+    public void setdEdForgetGate(double[] dEdForgetGate) {
+        this.dEdForgetGate = dEdForgetGate;
     }
 
     public double[] getdEdCellStateInput() {
@@ -325,67 +334,67 @@ public class LSTMCell implements LayerInterface {
         this.dEdCellStateInput = dEdCellStateInput;
     }
 
-    public double[] getdEdWInputVectorXOutput() {
-        return dEdWInputVectorXOutput;
+    public double[] getdEdWInputVectorXOutputGate() {
+        return dEdWInputVectorXOutputGate;
     }
 
-    public void setdEdWInputVectorXOutput(double[] dEdWInputVectorXOutput) {
-        this.dEdWInputVectorXOutput = dEdWInputVectorXOutput;
+    public void setdEdWInputVectorXOutputGate(double[] dEdWInputVectorXOutputGate) {
+        this.dEdWInputVectorXOutputGate = dEdWInputVectorXOutputGate;
     }
 
-    public double[] getdEdWInputVectorXInput() {
-        return dEdWInputVectorXInput;
+    public double[] getdEdWInputVectorXInputGate() {
+        return dEdWInputVectorXInputGate;
     }
 
-    public void setdEdWInputVectorXInput(double[] dEdWInputVectorXInput) {
-        this.dEdWInputVectorXInput = dEdWInputVectorXInput;
+    public void setdEdWInputVectorXInputGate(double[] dEdWInputVectorXInputGate) {
+        this.dEdWInputVectorXInputGate = dEdWInputVectorXInputGate;
     }
 
-    public double[] getdEdWInputVectorXForget() {
-        return dEdWInputVectorXForget;
+    public double[] getdEdWInputVectorXForgetGate() {
+        return dEdWInputVectorXForgetGate;
     }
 
-    public void setdEdWInputVectorXForget(double[] dEdWInputVectorXForget) {
-        this.dEdWInputVectorXForget = dEdWInputVectorXForget;
+    public void setdEdWInputVectorXForgetGate(double[] dEdWInputVectorXForgetGate) {
+        this.dEdWInputVectorXForgetGate = dEdWInputVectorXForgetGate;
     }
 
-    public double[] getdEdWInputVectorXCandidate() {
-        return dEdWInputVectorXCandidate;
+    public double[] getdEdWInputVectorXCandidateCellStateGate() {
+        return dEdWInputVectorXCandidateCellStateGate;
     }
 
-    public void setdEdWInputVectorXCandidate(double[] dEdWInputVectorXCandidate) {
-        this.dEdWInputVectorXCandidate = dEdWInputVectorXCandidate;
+    public void setdEdWInputVectorXCandidateCellStateGate(double[] dEdWInputVectorXCandidateCellStateGate) {
+        this.dEdWInputVectorXCandidateCellStateGate = dEdWInputVectorXCandidateCellStateGate;
     }
 
-    public double[] getdEdWHiddenStateInputOutput() {
-        return dEdWHiddenStateInputOutput;
+    public double[] getdEdWHiddenStateInputOutputGate() {
+        return dEdWHiddenStateInputOutputGate;
     }
 
-    public void setdEdWHiddenStateInputOutput(double[] dEdWHiddenStateInputOutput) {
-        this.dEdWHiddenStateInputOutput = dEdWHiddenStateInputOutput;
+    public void setdEdWHiddenStateInputOutputGate(double[] dEdWHiddenStateInputOutputGate) {
+        this.dEdWHiddenStateInputOutputGate = dEdWHiddenStateInputOutputGate;
     }
 
-    public double[] getdEdWHiddenStateInputInput() {
-        return dEdWHiddenStateInputInput;
+    public double[] getdEdWHiddenStateInputInputGate() {
+        return dEdWHiddenStateInputInputGate;
     }
 
-    public void setdEdWHiddenStateInputInput(double[] dEdWHiddenStateInputInput) {
-        this.dEdWHiddenStateInputInput = dEdWHiddenStateInputInput;
+    public void setdEdWHiddenStateInputInputGate(double[] dEdWHiddenStateInputInputGate) {
+        this.dEdWHiddenStateInputInputGate = dEdWHiddenStateInputInputGate;
     }
 
-    public double[] getdEdWHiddenStateInputForget() {
-        return dEdWHiddenStateInputForget;
+    public double[] getdEdWHiddenStateInputForgetGate() {
+        return dEdWHiddenStateInputForgetGate;
     }
 
-    public void setdEdWHiddenStateInputForget(double[] dEdWHiddenStateInputForget) {
-        this.dEdWHiddenStateInputForget = dEdWHiddenStateInputForget;
+    public void setdEdWHiddenStateInputForgetGate(double[] dEdWHiddenStateInputForgetGate) {
+        this.dEdWHiddenStateInputForgetGate = dEdWHiddenStateInputForgetGate;
     }
 
-    public double[] getdEdWHiddenStateInputCandidate() {
-        return dEdWHiddenStateInputCandidate;
+    public double[] getdEdWHiddenStateInputCandidateCellStateGate() {
+        return dEdWHiddenStateInputCandidateCellStateGate;
     }
 
-    public void setdEdWHiddenStateInputCandidate(double[] dEdWHiddenStateInputCandidate) {
-        this.dEdWHiddenStateInputCandidate = dEdWHiddenStateInputCandidate;
+    public void setdEdWHiddenStateInputCandidateCellStateGate(double[] dEdWHiddenStateInputCandidateCellStateGate) {
+        this.dEdWHiddenStateInputCandidateCellStateGate = dEdWHiddenStateInputCandidateCellStateGate;
     }
 }
