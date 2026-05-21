@@ -13,12 +13,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 class NeuralNetworkLTMSTest {
-    private final static int FIRST_LAYER_NODES_COUNT = 2;
-    private final static int SECOND_LAYER_NODES_COUNT = 2;
-    private final static double FIRST_INPUT_TO_NETWORK = 0.05;
-    private final static double SECOND_INPUT_TO_NETWORK = 0.1;
-    private final static double FIRST_OUTPUT_FROM_NETWORK = 0.01;
-    private final static double SECOND_OUTPUT_FROM_NETWORK = 0.99;
     private final static double WEIGHT_START_VALUE = 0.005;
     private final static double WEIGHT_STEP_INCREMENT = 0.005;
 
