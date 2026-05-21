@@ -19,7 +19,7 @@ public class NeuralNetworkLSTM {
         this.lstmRowList = new ArrayList<LSTMRow>();
         int[] cellsCountArray = new int[cellsCount];
         Arrays.fill(cellsCountArray, singleCellInputCount);
-        for (int rowIndex = 0; rowIndex < this.rowsCount; rowIndex++){
+        for (int rowIndex = 0; rowIndex < this.rowsCount; rowIndex++) {
             this.lstmRowList.add(new LSTMRow(cellsCountArray));
         }
     }
@@ -50,7 +50,7 @@ public class NeuralNetworkLSTM {
     }
 
     public void setNetworkInput(double[][] inputMatrix) {
-        for (int cellIndex = 0; cellIndex < this.getLastRow().getLstmCellCount(); ++cellIndex){
+        for (int cellIndex = 0; cellIndex < this.getLastRow().getLstmCellCount(); ++cellIndex) {
             this.getLastRow().getCellList().get(cellIndex).setInputVectorX(inputMatrix[cellIndex]);
         }
     }
@@ -84,6 +84,14 @@ public class NeuralNetworkLSTM {
                 this.lstmRowList.get(rowIndex).forwardPropagationRow();
             }
         }
+    }
+
+    public void setExpectedRowOutput(double[][] expectedRowOutput) {
+        this.getFirstRow().setExpectedRowOutput(expectedRowOutput);
+    }
+
+    public double[][] getExpectedRowOutput() {
+        return this.getFirstRow().getExpectedRowOutput();
     }
 
 }

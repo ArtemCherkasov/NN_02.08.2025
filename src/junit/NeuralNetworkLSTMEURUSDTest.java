@@ -97,7 +97,6 @@ class NeuralNetworkLSTMEURUSDTest {
         if (this.weight > 1.0) {
             this.weight = WEIGHT_START_VALUE;
         }
-
         return this.weight;
     }
 

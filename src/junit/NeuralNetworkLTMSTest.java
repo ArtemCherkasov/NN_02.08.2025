@@ -1,13 +1,11 @@
 package junit;
 
-import nn.common.CommonConstants;
 import nn.common.Node;
 import nn.helpers.DataHelper;
 import nn.helpers.eurusd.MarketPriceEURUSD;
 import nn.lstm.LSTMCell;
 import nn.lstm.LSTMRow;
 import nn.lstm.NeuralNetworkLSTM;
-import nn.simple.NeuralNetworkSimple;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +39,7 @@ class NeuralNetworkLTMSTest {
         normalMarketPriseSeries = DataHelper.getNormalMarketPriseSeriesFromList(marketPrices, 0, 35);
         neuralNetworkLSTM = new NeuralNetworkLSTM(normalMarketPriseSeries[0].length, LSTM_CELLS_COUNT_IN_ROW, LSTM_ROW_COUNT);
         neuralNetworkLSTM.setNetworkInput(normalMarketPriseSeries);
+        neuralNetworkLSTM.setExpectedRowOutput(DataHelper.getNormalMarketPriseSeriesFromList(marketPrices, 1, 36));
         for (LSTMRow row : neuralNetworkLSTM.getLstmRowList()) {
             for (LSTMCell cell : row.getCellList()) {
                 for (Node node : cell.getInputGate().getNodes()) {
@@ -82,7 +81,6 @@ class NeuralNetworkLTMSTest {
     void outputLayersTest() {
         double[][] expectedsInput = new double[][]{{0.5913384287136019, 0.562316925549143, 0.5735756407032029, 0.5846630759029958, 0.5107960908304006, 0.5338735696665052, 0.55777244095302, 0.5800606196362431, 0.5993514341029604}};
         neuralNetworkLSTM.forwardPropagationRow();
-        double[][] output = neuralNetworkLSTM.getNetworkOutput();
         Assertions.assertArrayEquals(expectedsInput[0], neuralNetworkLSTM.getNetworkOutput()[0], 0.0);
     }
 
@@ -91,7 +89,6 @@ class NeuralNetworkLTMSTest {
         if (this.weight > 1.0) {
             this.weight = WEIGHT_START_VALUE;
         }
-
         return this.weight;
     }
 

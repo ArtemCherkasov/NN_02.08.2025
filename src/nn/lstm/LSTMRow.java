@@ -10,6 +10,7 @@ public class LSTMRow {
     private final int lstmCellCount;
     List<LSTMCell> cellList;
     double[][] rowOutput;
+    double[][] expectedRowOutput;
     @Deprecated
     Layer lastLayer;
 
@@ -22,6 +23,7 @@ public class LSTMRow {
         }
         this.lastLayer = new Layer(this.getLastLSTMCellOutput().length, this.getLastLSTMCellOutput().length, 1, this.getLstmCellCount());
         this.rowOutput = new double[lstmCellCount][this.getLastLSTMCellOutput().length];
+        this.expectedRowOutput = new double[lstmCellCount][this.getLastLSTMCellOutput().length];
     }
 
     public LSTMRow(LSTMRow lstmRow) {
@@ -31,6 +33,8 @@ public class LSTMRow {
             this.cellList.add(new LSTMCell(lstmCell));
         }
         this.lastLayer = new Layer(lstmRow.getLastLayer());
+        this.rowOutput = new double[lstmCellCount][lstmRow.getCell(0).getOutputLength()];
+        this.expectedRowOutput = new double[lstmCellCount][lstmRow.getCell(0).getOutputLength()];
     }
 
     public List<LSTMCell> getCellList() {
@@ -57,7 +61,7 @@ public class LSTMRow {
         this.lastLayer.calculateLayerSigmaOutputs();
     }
 
-    public double[] getLastLSTMCellOutput(){
+    public double[] getLastLSTMCellOutput() {
         return this.getCell(this.lstmCellCount - 1).getOutputVector();
     }
 
@@ -74,5 +78,18 @@ public class LSTMRow {
             this.rowOutput[cellIndex] = this.cellList.get(cellIndex).getOutputVector();
         }
         return this.rowOutput;
+    }
+
+    public void setExpectedRowOutput(double[][] expectedRowOutput) {
+        for (int cellIndex = 0; cellIndex < lstmCellCount; ++cellIndex) {
+            this.cellList.get(cellIndex).setTargetPredictionVector(expectedRowOutput[cellIndex]);
+        }
+    }
+
+    public double[][] getExpectedRowOutput() {
+        for (int cellIndex = 0; cellIndex < lstmCellCount; ++cellIndex) {
+            this.expectedRowOutput[cellIndex] = this.cellList.get(cellIndex).getTargetPredictionVector();
+        }
+        return this.expectedRowOutput;
     }
 }

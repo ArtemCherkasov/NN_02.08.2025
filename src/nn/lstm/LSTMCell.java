@@ -174,6 +174,7 @@ public class LSTMCell implements LayerInterface {
 
     /**
      * Derivative of the sigmoid function (a*(1 - a))
+     *
      * @param a
      * @return double[]
      */
