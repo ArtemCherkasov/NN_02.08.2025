@@ -9,16 +9,19 @@ import java.util.List;
 public class LSTMRow {
     private final int lstmCellCount;
     List<LSTMCell> cellList;
+    double[][] rowOutput;
+    @Deprecated
     Layer lastLayer;
 
-    public LSTMRow(int[] layersCountArray) {
-        this.lstmCellCount = layersCountArray.length;
+    public LSTMRow(int[] inputsCountArray) {
+        this.lstmCellCount = inputsCountArray.length;
         this.cellList = new ArrayList<LSTMCell>();
-        this.cellList.add(new LSTMCell(layersCountArray[0], layersCountArray[0], 1, 0, CommonConstants.LSTM_CELL_NAME));
+        this.cellList.add(new LSTMCell(inputsCountArray[0], inputsCountArray[0], 1, 0, CommonConstants.LSTM_CELL_NAME));
         for (int cellIndex = 1; cellIndex < this.lstmCellCount; cellIndex++) {
-            this.cellList.add(new LSTMCell(this.cellList.get(cellIndex - 1).getOutputLength(), layersCountArray[cellIndex], 1, cellIndex, CommonConstants.LSTM_CELL_NAME));
+            this.cellList.add(new LSTMCell(this.cellList.get(cellIndex - 1).getOutputLength(), inputsCountArray[cellIndex], 1, cellIndex, CommonConstants.LSTM_CELL_NAME));
         }
         this.lastLayer = new Layer(this.getLastLSTMCellOutput().length, this.getLastLSTMCellOutput().length, 1, this.getLstmCellCount());
+        this.rowOutput = new double[lstmCellCount][this.getLastLSTMCellOutput().length];
     }
 
     public LSTMRow(LSTMRow lstmRow) {
@@ -38,7 +41,7 @@ public class LSTMRow {
         return this.cellList.get(cellIndex);
     }
 
-    public void setInputToLSTMRow(double[] inputVector) {
+    public void setInputToFirsCell(double[] inputVector) {
         this.getCell(CommonConstants.FIRST_CELL).setInputVectorX(inputVector);
     }
 
@@ -58,15 +61,18 @@ public class LSTMRow {
         return this.getCell(this.lstmCellCount - 1).getOutputVector();
     }
 
-    public double[] getLastLayerOutput(){
-        return this.lastLayer.getLayerOutputs();
-    }
-
     public Layer getLastLayer() {
         return this.lastLayer;
     }
 
     public int getLstmCellCount() {
         return this.lstmCellCount;
+    }
+
+    public double[][] getRowOutput() {
+        for (int cellIndex = 0; cellIndex < lstmCellCount; ++cellIndex) {
+            this.rowOutput[cellIndex] = this.cellList.get(cellIndex).getOutputVector();
+        }
+        return this.rowOutput;
     }
 }

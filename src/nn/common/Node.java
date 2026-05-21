@@ -5,6 +5,8 @@ import exceptions.NNInputExceptions;
 import java.util.Random;
 
 public class Node {
+    private final static int SINGLE_INPUT_COUNT = 1;
+    private final static double SIMPLE_UNIT_WEIGHTS = 1.0;
     private final int inputCount;
     private double[] inputs;
     private double[] weights;
@@ -12,6 +14,15 @@ public class Node {
     private double nodeValue;
     private double deltaOfNode; // dE_dOut*dOut_dNet
     private double[] deltaOfWeight;
+
+    public Node() {
+        this.inputCount = SINGLE_INPUT_COUNT;
+        this.inputs = new double[SINGLE_INPUT_COUNT];
+        this.weights = new double[SINGLE_INPUT_COUNT];
+        this.deltaOfWeight = new double[SINGLE_INPUT_COUNT];
+        this.sum = 0.0;
+        generateSimpleUnitWeights();
+    }
 
     public Node(int inputCount) {
         this.inputCount = inputCount;
@@ -71,6 +82,12 @@ public class Node {
         Random randomWeight = new Random();
         for (int i = 0; i < this.inputCount; i++) {
             this.weights[i] = randomWeight.nextDouble() * 2 - 1;
+        }
+    }
+
+    public void generateSimpleUnitWeights() {
+        for (int i = 0; i < this.inputCount; i++) {
+            this.weights[i] = SIMPLE_UNIT_WEIGHTS;
         }
     }
 

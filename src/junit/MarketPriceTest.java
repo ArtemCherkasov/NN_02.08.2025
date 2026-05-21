@@ -19,6 +19,7 @@ class MarketPriceTest {
     private final static int MONTH = 5;
     private final static int MONTH_DAY = 12;
     private final static String PRICE_TEXT = "2009.06.12\t10:15:00\t1.40954\t1.41129\t1.40929\t1.41069\t1002\t0\t20";
+    private final static int linePointer = 0;
 
     MarketPriceEURUSD marketPrice;
     SimpleDateFormat dateTimeFormat;
@@ -26,7 +27,7 @@ class MarketPriceTest {
 
     @BeforeEach
     public void initMarketPriceHelper() {
-        marketPrice = new MarketPriceEURUSD(PRICE_TEXT);
+        marketPrice = new MarketPriceEURUSD(PRICE_TEXT, linePointer);
         dateTimeFormat = new SimpleDateFormat("yyyy.M.dd hh:mm:ss");
         try {
             dateTime = dateTimeFormat.parse(DATE_TIME);

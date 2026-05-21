@@ -4,6 +4,7 @@ import exceptions.NNInputExceptions;
 import nn.common.CommonConstants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class NeuralNetworkLSTM {
@@ -12,11 +13,15 @@ public class NeuralNetworkLSTM {
     private final List<LSTMRow> lstmRowList;
     private int rowsCount;
 
-    public NeuralNetworkLSTM(int[] layersCountArray) {
-        this.masterRow = new LSTMRow(layersCountArray);
+    public NeuralNetworkLSTM(int singleCellInputCount, int cellsCount, int rowsCount) {
+        masterRow = null;
+        this.rowsCount = rowsCount;
         this.lstmRowList = new ArrayList<LSTMRow>();
-        this.lstmRowList.add(masterRow);
-        this.rowsCount = ROWS_COUNT_DEFAULT;
+        int[] cellsCountArray = new int[cellsCount];
+        Arrays.fill(cellsCountArray, singleCellInputCount);
+        for (int rowIndex = 0; rowIndex < this.rowsCount; rowIndex++){
+            this.lstmRowList.add(new LSTMRow(cellsCountArray));
+        }
     }
 
     public NeuralNetworkLSTM(LSTMRow lstmRow) {
@@ -40,8 +45,18 @@ public class NeuralNetworkLSTM {
         }
 
         for (int seriesIndex = 0; seriesIndex < seriesCount; seriesIndex++) {
-            this.lstmRowList.get(seriesIndex).setInputToLSTMRow(inputs[seriesIndex]);
+            this.lstmRowList.get(seriesIndex).setInputToFirsCell(inputs[seriesIndex]);
         }
+    }
+
+    public void setNetworkInput(double[][] inputMatrix) {
+        for (int cellIndex = 0; cellIndex < this.getLastRow().getLstmCellCount(); ++cellIndex){
+            this.getLastRow().getCellList().get(cellIndex).setInputVectorX(inputMatrix[cellIndex]);
+        }
+    }
+
+    public double[][] getNetworkOutput() {
+        return this.getFirstRow().getRowOutput();
     }
 
     public int getRowsCount() {
@@ -50,6 +65,10 @@ public class NeuralNetworkLSTM {
 
     public LSTMRow getLastRow() {
         return this.lstmRowList.get(this.rowsCount - 1);
+    }
+
+    public LSTMRow getFirstRow() {
+        return this.lstmRowList.get(0);
     }
 
     public List<LSTMRow> getLstmRowList() {

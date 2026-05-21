@@ -30,7 +30,7 @@ public class MarketPriceEURUSD implements MarketPrice {
     private double close;
     private double volume;
 
-    public MarketPriceEURUSD(String line) {
+    public MarketPriceEURUSD(String line, int lineNumber) {
         line = line.replace(CommonConstants.DOUBLE_QUOTE, CommonConstants.EMPTY);
         String[] textArray = line.split(CommonConstants.TAB_SYMBOL);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.M.dd hh:mm:ss");
@@ -42,7 +42,7 @@ public class MarketPriceEURUSD implements MarketPrice {
             this.volume = Double.valueOf(textArray[VOLUME_POS]);
             this.date = simpleDateFormat.parse(textArray[DATE_POS].concat(CommonConstants.WHITE_SPACE).concat(textArray[TIME_POS]));
         } catch (Exception e) {
-            throw new NNInputExceptions(CommonConstants.INCORRECT_MERKET_PRICE_DATA);
+            throw new NNInputExceptions(CommonConstants.INCORRECT_MERKET_PRICE_DATA, lineNumber);
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(this.date);

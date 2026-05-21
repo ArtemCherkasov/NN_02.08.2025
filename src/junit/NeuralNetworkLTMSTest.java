@@ -1,41 +1,47 @@
 package junit;
 
+import nn.common.CommonConstants;
 import nn.common.Node;
 import nn.helpers.DataHelper;
 import nn.helpers.eurusd.MarketPriceEURUSD;
-import nn.helpers.eurusd.PriceSigmaConverter;
 import nn.lstm.LSTMCell;
 import nn.lstm.LSTMRow;
 import nn.lstm.NeuralNetworkLSTM;
+import nn.simple.NeuralNetworkSimple;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-class NeuralNetworkLSTMEURUSDTest {
-    private final static int FIRST_CELL_NODES_COUNT = 9;
-    private final static int SECOND_CELL_NODES_COUNT = 9;
-    private final static int THIRD_CELL_NODES_COUNT = 5;
+class NeuralNetworkLTMSTest {
+    private final static int FIRST_LAYER_NODES_COUNT = 2;
+    private final static int SECOND_LAYER_NODES_COUNT = 2;
+    private final static double FIRST_INPUT_TO_NETWORK = 0.05;
+    private final static double SECOND_INPUT_TO_NETWORK = 0.1;
+    private final static double FIRST_OUTPUT_FROM_NETWORK = 0.01;
+    private final static double SECOND_OUTPUT_FROM_NETWORK = 0.99;
     private final static double WEIGHT_START_VALUE = 0.005;
     private final static double WEIGHT_STEP_INCREMENT = 0.005;
+
     private final static String PATH_TO_DATA_DIR = "\\resources\\";
     private final static String FILE_NAME = "\\EURUSD_H1_200906120000_202509251100.csv\\";
+    private final static int LSTM_CELLS_COUNT_IN_ROW = 35;
+    private final static int LSTM_ROW_COUNT = 1;
 
-    LSTMRow lstmRow;
-    NeuralNetworkLSTM nnLSTM;
     List<MarketPriceEURUSD> marketPrices;
+    double[][] normalMarketPriseSeries;
+    NeuralNetworkLSTM neuralNetworkLSTM;
     double weight = WEIGHT_START_VALUE;
 
     @BeforeEach
-    public void initNetwork() {
-        lstmRow = new LSTMRow(new int[]{FIRST_CELL_NODES_COUNT, SECOND_CELL_NODES_COUNT, THIRD_CELL_NODES_COUNT});
-        nnLSTM = new NeuralNetworkLSTM(lstmRow);
-        nnLSTM.addLSTMRowsSeries(29);
+    public void initNetworkAndLoadData() {
         String filePath = System.getProperty("user.dir").concat(PATH_TO_DATA_DIR);
         marketPrices = DataHelper.loadMarketPricesFromFile(filePath.concat(FILE_NAME));
-        nnLSTM.setInputSeries(DataHelper.getNormalMarketPriseSeriesFromList(marketPrices, 0, 30));
-        for (LSTMRow row : nnLSTM.getLstmRowList()) {
+        normalMarketPriseSeries = DataHelper.getNormalMarketPriseSeriesFromList(marketPrices, 0, 35);
+        neuralNetworkLSTM = new NeuralNetworkLSTM(normalMarketPriseSeries[0].length, LSTM_CELLS_COUNT_IN_ROW, LSTM_ROW_COUNT);
+        neuralNetworkLSTM.setNetworkInput(normalMarketPriseSeries);
+        for (LSTMRow row : neuralNetworkLSTM.getLstmRowList()) {
             for (LSTMCell cell : row.getCellList()) {
                 for (Node node : cell.getInputGate().getNodes()) {
                     for (int weightIndex = 0; weightIndex < node.getWeights().length; weightIndex++) {
@@ -67,29 +73,17 @@ class NeuralNetworkLSTMEURUSDTest {
     }
 
     @Test
-    void lstmRowConfigurationTest() {
-        Assertions.assertEquals(3, lstmRow.getCellList().size());
-        Assertions.assertEquals(FIRST_CELL_NODES_COUNT, lstmRow.getCell(0).getForgetGate().getNodes().size());
-        Assertions.assertEquals(SECOND_CELL_NODES_COUNT, lstmRow.getCell(1).getForgetGate().getNodes().size());
-        Assertions.assertEquals(THIRD_CELL_NODES_COUNT, lstmRow.getCell(2).getForgetGate().getNodes().size());
-        Assertions.assertEquals(FIRST_CELL_NODES_COUNT, lstmRow.getCell(0).getInputGate().getNodes().size());
-        Assertions.assertEquals(SECOND_CELL_NODES_COUNT, lstmRow.getCell(1).getInputGate().getNodes().size());
-        Assertions.assertEquals(THIRD_CELL_NODES_COUNT, lstmRow.getCell(2).getInputGate().getNodes().size());
-        Assertions.assertEquals(FIRST_CELL_NODES_COUNT, lstmRow.getCell(0).getOutputGate().getNodes().size());
-        Assertions.assertEquals(SECOND_CELL_NODES_COUNT, lstmRow.getCell(1).getOutputGate().getNodes().size());
-        Assertions.assertEquals(THIRD_CELL_NODES_COUNT, lstmRow.getCell(2).getOutputGate().getNodes().size());
-        Assertions.assertEquals(FIRST_CELL_NODES_COUNT, lstmRow.getCell(0).getCandidateCellState().getNodes().size());
-        Assertions.assertEquals(SECOND_CELL_NODES_COUNT, lstmRow.getCell(1).getCandidateCellState().getNodes().size());
-        Assertions.assertEquals(THIRD_CELL_NODES_COUNT, lstmRow.getCell(2).getCandidateCellState().getNodes().size());
+    void inputLayersTest() {
+        double[] expectedsInput = new double[]{0.12, 0.06, 0.0, 0.05, 0.140954, 0.141129, 0.140929, 0.141069, 0.1002};
+        Assertions.assertArrayEquals(expectedsInput, neuralNetworkLSTM.getLastRow().getCell(0).getInputVectorX(), 0.0);
     }
 
     @Test
-    void nnLSTMTest() {
-        nnLSTM.forwardPropagationRow();
-        PriceSigmaConverter ps = new PriceSigmaConverter();
-        Assertions.assertEquals(0.7310072753908902, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[0]);
-        Assertions.assertEquals(0.73103632253106, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[1]);
-        Assertions.assertEquals(0.731048924229704, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[2]);
+    void outputLayersTest() {
+        double[][] expectedsInput = new double[][]{{0.5913384287136019, 0.562316925549143, 0.5735756407032029, 0.5846630759029958, 0.5107960908304006, 0.5338735696665052, 0.55777244095302, 0.5800606196362431, 0.5993514341029604}};
+        neuralNetworkLSTM.forwardPropagationRow();
+        double[][] output = neuralNetworkLSTM.getNetworkOutput();
+        Assertions.assertArrayEquals(expectedsInput[0], neuralNetworkLSTM.getNetworkOutput()[0], 0.0);
     }
 
     private double weightGenerate() {

@@ -17,7 +17,7 @@ class NeuralNetworkLSTMForwardPropagationTest {
     @BeforeEach
     public void initNetwork() {
         lstmRow = new LSTMRow(new int[]{FIRST_CELL_NODES_COUNT, SECOND_CELL_NODES_COUNT, THIRD_CELL_NODES_COUNT});
-        lstmRow.setInputToLSTMRow(new double[]{0.05, 0.10, 0.15});
+        lstmRow.setInputToFirsCell(new double[]{0.05, 0.10, 0.15});
         lstmRow.getCell(0).setCellStateInput(new double[]{0.001, 0.001, 0.001});
         lstmRow.getCell(1).setCellStateInput(new double[]{0.001, 0.001, 0.001, 0.001});
         lstmRow.getCell(2).setCellStateInput(new double[]{0.001, 0.001, 0.001});
@@ -91,9 +91,9 @@ class NeuralNetworkLSTMForwardPropagationTest {
     @Test
     void nnLSTMTest() {
         nnLSTM.forwardPropagationRow();
-        Assertions.assertEquals(0.8477110297523782, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[0]);
-        Assertions.assertEquals(0.9221331634583193, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[1]);
-        Assertions.assertEquals(0.9330582988880746, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[2]);
+        Assertions.assertEquals(0.607282519114117, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[0]);
+        Assertions.assertEquals(0.700668520203323, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[1]);
+        Assertions.assertEquals(0.7185720809641662, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[2]);
     }
 
 }

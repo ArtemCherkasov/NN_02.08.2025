@@ -18,15 +18,17 @@ public class DataHelper {
     }
 
     public static List<MarketPriceEURUSD> loadMarketPricesFromFile(String pathToFile) {
+        int linesCount = 0;
         try {
             priceLines = DataHelper.loadTextDataFromFile(pathToFile);
+            linesCount = priceLines.size();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         marketPrices = new ArrayList<MarketPriceEURUSD>();
-        for (String line : priceLines) {
+        for (int linePointer = 0; linePointer < linesCount; ++linePointer) {
             try {
-                marketPrices.add(new MarketPriceEURUSD(line));
+                marketPrices.add(new MarketPriceEURUSD(priceLines.get(linePointer), linePointer));
             } catch (Exception e) {
                 e.printStackTrace();
             }
