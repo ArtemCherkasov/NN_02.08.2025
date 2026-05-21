@@ -75,7 +75,7 @@ public class NeuralNetworkLSTM {
         return this.lstmRowList;
     }
 
-    public void forwardPropagationRow() {
+    public void forwardPropagation() {
         this.lstmRowList.get(0).forwardPropagationRow();
         for (int rowIndex = 1; rowIndex < this.rowsCount; rowIndex++) {
             for (int cellIndex = 0; cellIndex < this.lstmRowList.get(rowIndex).getLstmCellCount(); cellIndex++) {
@@ -92,6 +92,10 @@ public class NeuralNetworkLSTM {
 
     public double[][] getExpectedRowOutput() {
         return this.getFirstRow().getExpectedRowOutput();
+    }
+
+    public double getMeanSquaredError() {
+        return this.getFirstRow().getMeanSquaredError();
     }
 
 }

@@ -85,7 +85,7 @@ class NeuralNetworkLSTMEURUSDTest {
 
     @Test
     void nnLSTMTest() {
-        nnLSTM.forwardPropagationRow();
+        nnLSTM.forwardPropagation();
         PriceSigmaConverter ps = new PriceSigmaConverter();
         Assertions.assertEquals(0.7310072753908902, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[0]);
         Assertions.assertEquals(0.73103632253106, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[1]);

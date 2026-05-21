@@ -63,6 +63,7 @@ class NeuralNetworkLTMSTest {
                 }
             }
         }
+        neuralNetworkLSTM.forwardPropagation();
     }
 
     @Test
@@ -74,8 +75,12 @@ class NeuralNetworkLTMSTest {
     @Test
     void outputLayersTest() {
         double[][] expectedsInput = new double[][]{{0.5913384287136019, 0.562316925549143, 0.5735756407032029, 0.5846630759029958, 0.5107960908304006, 0.5338735696665052, 0.55777244095302, 0.5800606196362431, 0.5993514341029604}};
-        neuralNetworkLSTM.forwardPropagationRow();
         Assertions.assertArrayEquals(expectedsInput[0], neuralNetworkLSTM.getNetworkOutput()[0], 0.0);
+    }
+
+    @Test
+    void meanSquaredErrorTest(){
+        Assertions.assertEquals(0.2730855940757926, neuralNetworkLSTM.getMeanSquaredError());
     }
 
     private double weightGenerate() {
