@@ -68,18 +68,26 @@ class NeuralNetworkLTMSTest {
 
     @Test
     void inputLayersTest() {
-        double[] expectedsInput = new double[]{0.12, 0.06, 0.0, 0.05, 0.140954, 0.141129, 0.140929, 0.141069, 0.1002};
-        Assertions.assertArrayEquals(expectedsInput, neuralNetworkLSTM.getLastRow().getCell(0).getInputVectorX(), 0.0);
+        double[] expectedInput = new double[]{0.12, 0.06, 0.0, 0.05, 0.140954, 0.141129, 0.140929, 0.141069, 0.1002};
+        Assertions.assertArrayEquals(expectedInput, neuralNetworkLSTM.getLastRow().getCell(0).getInputVectorX(), 0.0);
     }
 
     @Test
     void outputLayersTest() {
-        double[][] expectedsInput = new double[][]{{0.5913384287136019, 0.562316925549143, 0.5735756407032029, 0.5846630759029958, 0.5107960908304006, 0.5338735696665052, 0.55777244095302, 0.5800606196362431, 0.5993514341029604}};
-        Assertions.assertArrayEquals(expectedsInput[0], neuralNetworkLSTM.getNetworkOutput()[0], 0.0);
+        double[][] expectedOutput = new double[][]{{0.5913384287136019, 0.562316925549143, 0.5735756407032029, 0.5846630759029958, 0.5107960908304006, 0.5338735696665052, 0.55777244095302, 0.5800606196362431, 0.5993514341029604}};
+        Assertions.assertArrayEquals(expectedOutput[0], neuralNetworkLSTM.getNetworkOutput()[0], 0.0);
     }
 
     @Test
     void meanSquaredErrorTest(){
+        for(int i = 0; i < 100; ++i){
+            neuralNetworkLSTM.setDirection();
+            for (int j = 0; j < 100; ++j){
+                neuralNetworkLSTM.learningAction();
+                neuralNetworkLSTM.forwardPropagation();
+                System.out.println(neuralNetworkLSTM.getMeanSquaredError());
+            }
+        }
         Assertions.assertEquals(0.2730855940757926, neuralNetworkLSTM.getMeanSquaredError());
     }
 

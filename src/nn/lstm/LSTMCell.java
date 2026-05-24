@@ -22,7 +22,7 @@ public class LSTMCell implements LayerInterface {
     private double[] hiddenState;
     private double[] inputVectorX;
     private List<Node> targetSigmaVector;
-    private double[] targetPredictionVector;
+    private double[] expectedVector;
     private double[] targetSigmaPredictionVector;
 
     public LSTMCell(int inputCount, int gatesNodeCount, int biasesCount, int layerIndex, String layerName) {
@@ -205,12 +205,16 @@ public class LSTMCell implements LayerInterface {
         this.hiddenState = this.sigmaFunction(this.hiddenState);
     }
 
-    public double[] getTargetPredictionVector() {
-        return this.targetPredictionVector;
+    public void enumerationAllNodes(){
+        //TODO
     }
 
-    public void setTargetPredictionVector(double[] targetPredictionVector) {
-        this.targetPredictionVector = targetPredictionVector;
+    public double[] getExpectedVector() {
+        return this.expectedVector;
+    }
+
+    public void setExpectedVector(double[] expectedVector) {
+        this.expectedVector = this.sigmaFunction(expectedVector);
     }
 
     public void setTargetSigmaPredictionVector(double[] targetSigmaPredictionVector) {

@@ -2,6 +2,7 @@ package nn.lstm;
 
 import exceptions.NNInputExceptions;
 import nn.common.CommonConstants;
+import nn.common.Node;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -82,6 +83,84 @@ public class NeuralNetworkLSTM {
                 this.lstmRowList.get(rowIndex).getCell(cellIndex).setCellStateInput(this.lstmRowList.get(rowIndex - 1).getCell(cellIndex).getCellState());
                 this.lstmRowList.get(rowIndex).getCell(cellIndex).setHiddenStateInput(this.lstmRowList.get(rowIndex - 1).getCell(cellIndex).getHiddenState());
                 this.lstmRowList.get(rowIndex).forwardPropagationRow();
+            }
+        }
+    }
+
+    public void setDirection(){
+        this.forwardPropagation();
+        double currentSquaredError = this.getMeanSquaredError();
+        double actionSquaredError = 0.0;
+        for (LSTMRow row : this.getLstmRowList()) {
+            for (LSTMCell cell : row.getCellList()) {
+                for (Node node : cell.getInputGate().getNodes()) {
+                    for (int weightIndex = 0; weightIndex < node.getWeights().length; weightIndex++) {
+                        node.setNegativeChange(weightIndex);
+                        this.forwardPropagation();
+                        actionSquaredError = this.getMeanSquaredError();
+                        if (actionSquaredError > currentSquaredError){
+                            node.repairConditionWithDirection(weightIndex);
+                            node.setPositiveChange(weightIndex);
+                        }
+                        node.repairWeight(weightIndex);
+                    }
+                }
+                for (Node node : cell.getOutputGate().getNodes()) {
+                    for (int weightIndex = 0; weightIndex < node.getWeights().length; weightIndex++) {
+                        node.setNegativeChange(weightIndex);
+                        this.forwardPropagation();
+                        actionSquaredError = this.getMeanSquaredError();
+                        if (actionSquaredError > currentSquaredError){
+                            node.repairConditionWithDirection(weightIndex);
+                            node.setPositiveChange(weightIndex);
+                        }
+                        node.repairWeight(weightIndex);
+                    }
+                }
+                for (Node node : cell.getForgetGate().getNodes()) {
+                    for (int weightIndex = 0; weightIndex < node.getWeights().length; weightIndex++) {
+                        node.setNegativeChange(weightIndex);
+                        this.forwardPropagation();
+                        actionSquaredError = this.getMeanSquaredError();
+                        if (actionSquaredError > currentSquaredError){
+                            node.repairConditionWithDirection(weightIndex);
+                            node.setPositiveChange(weightIndex);
+                        }
+                        node.repairWeight(weightIndex);
+                    }
+                }
+                for (Node node : cell.getCandidateCellState().getNodes()) {
+                    for (int weightIndex = 0; weightIndex < node.getWeights().length; weightIndex++) {
+                        node.setNegativeChange(weightIndex);
+                        this.forwardPropagation();
+                        actionSquaredError = this.getMeanSquaredError();
+                        if (actionSquaredError > currentSquaredError){
+                            node.repairConditionWithDirection(weightIndex);
+                            node.setPositiveChange(weightIndex);
+                        }
+                        node.repairWeight(weightIndex);
+                    }
+                }
+            }
+        }
+    }
+
+    public void learningAction(){
+        this.forwardPropagation();
+        for (LSTMRow row : this.getLstmRowList()) {
+            for (LSTMCell cell : row.getCellList()) {
+                for (Node node : cell.getInputGate().getNodes()) {
+                    node.learningAction();
+                }
+                for (Node node : cell.getOutputGate().getNodes()) {
+                    node.learningAction();
+                }
+                for (Node node : cell.getForgetGate().getNodes()) {
+                    node.learningAction();
+                }
+                for (Node node : cell.getCandidateCellState().getNodes()) {
+                    node.learningAction();
+                }
             }
         }
     }

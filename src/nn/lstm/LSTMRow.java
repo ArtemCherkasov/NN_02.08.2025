@@ -82,13 +82,13 @@ public class LSTMRow {
 
     public void setExpectedRowOutput(double[][] expectedRowOutput) {
         for (int cellIndex = 0; cellIndex < lstmCellCount; ++cellIndex) {
-            this.cellList.get(cellIndex).setTargetPredictionVector(expectedRowOutput[cellIndex]);
+            this.cellList.get(cellIndex).setExpectedVector(expectedRowOutput[cellIndex]);
         }
     }
 
     public double[][] getExpectedRowOutput() {
         for (int cellIndex = 0; cellIndex < lstmCellCount; ++cellIndex) {
-            this.expectedRowOutput[cellIndex] = this.cellList.get(cellIndex).getTargetPredictionVector();
+            this.expectedRowOutput[cellIndex] = this.cellList.get(cellIndex).getExpectedVector();
         }
         return this.expectedRowOutput;
     }

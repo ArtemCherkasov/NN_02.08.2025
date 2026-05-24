@@ -1,5 +1,6 @@
 package nn.common;
 
+import enums.Direction;
 import exceptions.NNInputExceptions;
 
 import java.util.Random;
@@ -13,12 +14,14 @@ public class Node {
     private double sum;
     private double nodeValue;
     private double deltaOfNode; // dE_dOut*dOut_dNet
+    private Direction[] directionOfChange;
     private double[] deltaOfWeight;
 
     public Node() {
         this.inputCount = SINGLE_INPUT_COUNT;
         this.inputs = new double[SINGLE_INPUT_COUNT];
         this.weights = new double[SINGLE_INPUT_COUNT];
+        this.directionOfChange = new Direction[SINGLE_INPUT_COUNT];
         this.deltaOfWeight = new double[SINGLE_INPUT_COUNT];
         this.sum = 0.0;
         generateSimpleUnitWeights();
@@ -28,9 +31,13 @@ public class Node {
         this.inputCount = inputCount;
         this.inputs = new double[inputCount];
         this.weights = new double[inputCount];
+        this.directionOfChange = new Direction[inputCount];
         this.deltaOfWeight = new double[inputCount];
         this.sum = 0.0;
         generateWeights();
+        for(int inputIndex = 0; inputIndex < inputCount; ++inputIndex){
+            this.directionOfChange[inputIndex] = Direction.IMMUTABLE;
+        }
     }
 
     public Node(Node node) {
@@ -146,6 +153,53 @@ public class Node {
 
     public double tanhActivateFunction(double summ) {
         return (Math.exp(summ) - Math.exp(-1 * summ)) / (Math.exp(summ) + Math.exp(-1 * summ));
+    }
+
+    public void learningAction(){
+        for(int directionOfChangeIndex = 0; directionOfChangeIndex < this.inputCount; ++directionOfChangeIndex){
+            switch (this.directionOfChange[directionOfChangeIndex]){
+                case POSITIVE :
+                    this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] + CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
+                case NEGATIVE:
+                    this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] - CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
+            }
+            if (this.weights[directionOfChangeIndex] > 1.0 || this.weights[directionOfChangeIndex] < -1.0) {
+                this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] / 2.0;
+            }
+        }
+    }
+
+    public void setPositiveChange(int directionOfChangeIndex){
+        this.directionOfChange[directionOfChangeIndex] = Direction.POSITIVE;
+        this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] + CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
+    }
+
+    public void setNegativeChange(int directionOfChangeIndex){
+        this.directionOfChange[directionOfChangeIndex] = Direction.NEGATIVE;
+        this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] - CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
+    }
+
+    public void setImmutable(int directionOfChangeIndex){
+        this.directionOfChange[directionOfChangeIndex] = Direction.IMMUTABLE;
+    }
+
+    public void repairConditionWithDirection(int directionOfChangeIndex){
+        switch (this.directionOfChange[directionOfChangeIndex]){
+            case POSITIVE :
+                this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] - CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
+            case NEGATIVE:
+                this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] + CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
+        }
+        this.directionOfChange[directionOfChangeIndex] = Direction.IMMUTABLE;
+    }
+
+    public void repairWeight(int directionOfChangeIndex){
+        switch (this.directionOfChange[directionOfChangeIndex]){
+            case POSITIVE :
+                this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] - CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
+            case NEGATIVE:
+                this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] + CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
+        }
     }
 
     @Override
