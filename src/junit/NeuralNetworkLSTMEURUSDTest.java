@@ -16,7 +16,7 @@ import java.util.List;
 class NeuralNetworkLSTMEURUSDTest {
     private final static int FIRST_CELL_NODES_COUNT = 9;
     private final static int SECOND_CELL_NODES_COUNT = 9;
-    private final static int THIRD_CELL_NODES_COUNT = 5;
+    private final static int THIRD_CELL_NODES_COUNT = 9;
     private final static double WEIGHT_START_VALUE = 0.005;
     private final static double WEIGHT_STEP_INCREMENT = 0.005;
     private final static String PATH_TO_DATA_DIR = "\\resources\\";
@@ -87,9 +87,9 @@ class NeuralNetworkLSTMEURUSDTest {
     void nnLSTMTest() {
         nnLSTM.forwardPropagation();
         PriceSigmaConverter ps = new PriceSigmaConverter();
-        Assertions.assertEquals(0.7310072753908902, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[0]);
-        Assertions.assertEquals(0.73103632253106, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[1]);
-        Assertions.assertEquals(0.731048924229704, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[2]);
+        Assertions.assertEquals(0.7308418241342797, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[0]);
+        Assertions.assertEquals(0.7130246977898583, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[1]);
+        Assertions.assertEquals(0.6681215198677201, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[2]);
     }
 
     private double weightGenerate() {

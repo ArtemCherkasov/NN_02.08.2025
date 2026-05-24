@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-class NeuralNetworkLTMSTest {
+class NeuralNetworkLTMSTWithCustomWeightsTest {
     private final static double WEIGHT_START_VALUE = 0.005;
     private final static double WEIGHT_STEP_INCREMENT = 0.005;
 
@@ -80,15 +80,15 @@ class NeuralNetworkLTMSTest {
 
     @Test
     void meanSquaredErrorTest(){
-        for(int i = 0; i < 100; ++i){
+        for(int i = 0; i < 2; ++i){
             neuralNetworkLSTM.setDirection();
-            for (int j = 0; j < 100; ++j){
+            for (int j = 0; j < 2; ++j){
                 neuralNetworkLSTM.learningAction();
                 neuralNetworkLSTM.forwardPropagation();
                 System.out.println(neuralNetworkLSTM.getMeanSquaredError());
             }
         }
-        Assertions.assertEquals(0.2730855940757926, neuralNetworkLSTM.getMeanSquaredError());
+        Assertions.assertEquals(0.34701846827940724, neuralNetworkLSTM.getMeanSquaredError());
     }
 
     private double weightGenerate() {

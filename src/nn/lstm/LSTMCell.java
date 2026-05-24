@@ -214,7 +214,8 @@ public class LSTMCell implements LayerInterface {
     }
 
     public void setExpectedVector(double[] expectedVector) {
-        this.expectedVector = this.sigmaFunction(expectedVector);
+        //this.expectedVector = this.sigmaFunction(expectedVector);
+        this.expectedVector = expectedVector;
     }
 
     public void setTargetSigmaPredictionVector(double[] targetSigmaPredictionVector) {

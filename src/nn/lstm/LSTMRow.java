@@ -51,9 +51,11 @@ public class LSTMRow {
 
     public void forwardPropagationRow() {
         this.getCell(CommonConstants.FIRST_CELL).forwardPropagation();
-        for (int cellIndex = 1; cellIndex < this.lstmCellCount; cellIndex++) {
-            double[] outputVector = this.getCell(cellIndex - 1).getOutputVector();
-            this.getCell(cellIndex).setInputVectorX(outputVector);
+        for (int cellIndex = 1; cellIndex < this.lstmCellCount; ++cellIndex) {
+            double[] prevHiddenState = this.getCell(cellIndex - 1).getHiddenState();
+            double[] prevCellSate = this.getCell(cellIndex - 1).getCellState();
+            this.getCell(cellIndex).setHiddenStateInput(prevHiddenState);
+            this.getCell(cellIndex).setCellStateInput(prevCellSate);
             this.getCell(cellIndex).forwardPropagation();
         }
         double[] outputLastVector = this.getCell(this.getLstmCellCount() - 1).getOutputVector();
@@ -75,7 +77,7 @@ public class LSTMRow {
 
     public double[][] getRowOutput() {
         for (int cellIndex = 0; cellIndex < lstmCellCount; ++cellIndex) {
-            this.rowOutput[cellIndex] = this.cellList.get(cellIndex).getOutputVector();
+            this.rowOutput[cellIndex] = this.cellList.get(cellIndex).getHiddenState();
         }
         return this.rowOutput;
     }
