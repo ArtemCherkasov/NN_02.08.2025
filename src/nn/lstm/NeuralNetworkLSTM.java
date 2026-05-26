@@ -13,6 +13,7 @@ public class NeuralNetworkLSTM {
     private final LSTMRow masterRow;
     private final List<LSTMRow> lstmRowList;
     private int rowsCount;
+    private double currentSquaredError;
 
     public NeuralNetworkLSTM(int singleCellInputCount, int cellsCount, int rowsCount) {
         masterRow = null;
@@ -89,56 +90,27 @@ public class NeuralNetworkLSTM {
 
     public void setDirection(){
         this.forwardPropagation();
-        double currentSquaredError = this.getMeanSquaredError();
-        double actionSquaredError = 0.0;
+        this.currentSquaredError = this.getMeanSquaredError();
         for (LSTMRow row : this.getLstmRowList()) {
-            for (LSTMCell cell : row.getCellList()) {
-                for (Node node : cell.getInputGate().getNodes()) {
+            for (int cellIndex = 0; cellIndex < row.getLstmCellCount(); cellIndex++){
+                for (Node node : row.getCell(cellIndex).getInputGate().getNodes()) {
                     for (int weightIndex = 0; weightIndex < node.getWeights().length; weightIndex++) {
-                        node.setNegativeChange(weightIndex);
-                        this.forwardPropagation();
-                        actionSquaredError = this.getMeanSquaredError();
-                        if (actionSquaredError > currentSquaredError){
-                            node.repairConditionWithDirection(weightIndex);
-                            node.setPositiveChange(weightIndex);
-                        }
-                        node.repairWeight(weightIndex);
+                        this.setNodeDirection(node, cellIndex, weightIndex);
                     }
                 }
-                for (Node node : cell.getOutputGate().getNodes()) {
+                for (Node node : row.getCell(cellIndex).getOutputGate().getNodes()) {
                     for (int weightIndex = 0; weightIndex < node.getWeights().length; weightIndex++) {
-                        node.setNegativeChange(weightIndex);
-                        this.forwardPropagation();
-                        actionSquaredError = this.getMeanSquaredError();
-                        if (actionSquaredError > currentSquaredError){
-                            node.repairConditionWithDirection(weightIndex);
-                            node.setPositiveChange(weightIndex);
-                        }
-                        node.repairWeight(weightIndex);
+                        this.setNodeDirection(node, cellIndex, weightIndex);
                     }
                 }
-                for (Node node : cell.getForgetGate().getNodes()) {
+                for (Node node : row.getCell(cellIndex).getForgetGate().getNodes()) {
                     for (int weightIndex = 0; weightIndex < node.getWeights().length; weightIndex++) {
-                        node.setNegativeChange(weightIndex);
-                        this.forwardPropagation();
-                        actionSquaredError = this.getMeanSquaredError();
-                        if (actionSquaredError > currentSquaredError){
-                            node.repairConditionWithDirection(weightIndex);
-                            node.setPositiveChange(weightIndex);
-                        }
-                        node.repairWeight(weightIndex);
+                        this.setNodeDirection(node, cellIndex, weightIndex);
                     }
                 }
-                for (Node node : cell.getCandidateCellState().getNodes()) {
+                for (Node node : row.getCell(cellIndex).getCandidateCellState().getNodes()) {
                     for (int weightIndex = 0; weightIndex < node.getWeights().length; weightIndex++) {
-                        node.setNegativeChange(weightIndex);
-                        this.forwardPropagation();
-                        actionSquaredError = this.getMeanSquaredError();
-                        if (actionSquaredError > currentSquaredError){
-                            node.repairConditionWithDirection(weightIndex);
-                            node.setPositiveChange(weightIndex);
-                        }
-                        node.repairWeight(weightIndex);
+                        this.setNodeDirection(node, cellIndex, weightIndex);
                     }
                 }
             }
@@ -175,6 +147,22 @@ public class NeuralNetworkLSTM {
 
     public double getMeanSquaredError() {
         return this.getFirstRow().getMeanSquaredError();
+    }
+
+    public double getMeanSquaredErrorStartFromCellIndex(int cellIndex) {
+        return this.getFirstRow().getMeanSquaredErrorStartFromCellIndex(cellIndex);
+    }
+
+    private void setNodeDirection(Node node, int cellIndex, int weightIndex){
+        node.setNegativeChange(weightIndex);
+        this.forwardPropagation();
+        double actionSquaredError = this.getMeanSquaredErrorStartFromCellIndex(cellIndex);
+        if (actionSquaredError > this.currentSquaredError){
+            node.setDirectionPositive(weightIndex);
+        } else if (actionSquaredError == this.currentSquaredError){
+            node.setDirectionImmutable(weightIndex);
+        }
+        node.repairWeight(weightIndex);
     }
 
 }

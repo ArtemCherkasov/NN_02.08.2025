@@ -77,7 +77,7 @@ public class LSTMRow {
 
     public double[][] getRowOutput() {
         for (int cellIndex = 0; cellIndex < lstmCellCount; ++cellIndex) {
-            this.rowOutput[cellIndex] = this.cellList.get(cellIndex).getHiddenState();
+            this.rowOutput[cellIndex] = this.cellList.get(cellIndex).getOutputVector();
         }
         return this.rowOutput;
     }
@@ -103,6 +103,22 @@ public class LSTMRow {
         double mse = 0.0;
         int totalElementCount = cellsCount * outputCountPerCell;
         for(int cellIndex = 0; cellIndex < cellsCount; ++cellIndex){
+            for (int outputCount = 0; outputCount < outputCountPerCell; ++outputCount){
+                mse = mse + Math.pow(tagetMatrix[cellIndex][outputCount] - predictedMatrix[cellIndex][outputCount], 2);
+            }
+        }
+        mse = mse / totalElementCount;
+        return mse;
+    }
+
+    public double getMeanSquaredErrorStartFromCellIndex(int index) {
+        double[][] tagetMatrix = this.getExpectedRowOutput();
+        double[][] predictedMatrix = this.getRowOutput();
+        int cellsCount = this.lstmCellCount;
+        int outputCountPerCell = this.getCell(0).getOutputLength();
+        double mse = 0.0;
+        int totalElementCount = cellsCount * outputCountPerCell;
+        for(int cellIndex = index; cellIndex < cellsCount; ++cellIndex){
             for (int outputCount = 0; outputCount < outputCountPerCell; ++outputCount){
                 mse = mse + Math.pow(tagetMatrix[cellIndex][outputCount] - predictedMatrix[cellIndex][outputCount], 2);
             }

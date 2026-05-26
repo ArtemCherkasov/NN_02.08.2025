@@ -13,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 class NeuralNetworkLTMSTWithRandomWeightsTest {
-    private final static double WEIGHT_START_VALUE = 0.005;
-    private final static double WEIGHT_STEP_INCREMENT = 0.005;
 
     private final static String PATH_TO_DATA_DIR = "\\resources\\";
     private final static String FILE_NAME = "\\EURUSD_H1_200906120000_202509251100.csv\\";
@@ -24,7 +22,6 @@ class NeuralNetworkLTMSTWithRandomWeightsTest {
     List<MarketPriceEURUSD> marketPrices;
     double[][] normalMarketPriseSeries;
     NeuralNetworkLSTM neuralNetworkLSTM;
-    double weight = WEIGHT_START_VALUE;
 
     @BeforeEach
     public void initNetworkAndLoadData() {
@@ -40,18 +37,14 @@ class NeuralNetworkLTMSTWithRandomWeightsTest {
     @Test
     void meanSquaredErrorTest(){
         //TODO
-        /*
-        for(int i = 0; i < 2; ++i){
+        for(int i = 0; i < 10000; ++i){
             neuralNetworkLSTM.setDirection();
-            for (int j = 0; j < 2; ++j){
-                neuralNetworkLSTM.learningAction();
-                neuralNetworkLSTM.forwardPropagation();
-                System.out.println(neuralNetworkLSTM.getMeanSquaredError());
-            }
+            neuralNetworkLSTM.learningAction();
+            neuralNetworkLSTM.forwardPropagation();
+            System.out.println(neuralNetworkLSTM.getMeanSquaredError());
         }
-        Assertions.assertEquals(0.2730855940757926, neuralNetworkLSTM.getMeanSquaredError());
+        Assertions.assertEquals(0.15275728127875782, neuralNetworkLSTM.getMeanSquaredError());
 
-         */
     }
 
 }

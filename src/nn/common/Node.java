@@ -11,6 +11,7 @@ public class Node {
     private final int inputCount;
     private double[] inputs;
     private double[] weights;
+    private double tempWeigth;
     private double sum;
     private double nodeValue;
     private double deltaOfNode; // dE_dOut*dOut_dNet
@@ -88,7 +89,7 @@ public class Node {
     public void generateWeights() {
         Random randomWeight = new Random();
         for (int i = 0; i < this.inputCount; i++) {
-            this.weights[i] = randomWeight.nextDouble() * 2 - 1;
+            this.weights[i] = randomWeight.nextDouble();
         }
     }
 
@@ -160,46 +161,45 @@ public class Node {
             switch (this.directionOfChange[directionOfChangeIndex]){
                 case POSITIVE :
                     this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] + CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
+                    break;
                 case NEGATIVE:
                     this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] - CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
-            }
-            if (this.weights[directionOfChangeIndex] > 1.0 || this.weights[directionOfChangeIndex] < -1.0) {
-                this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] / 2.0;
+                    break;
             }
         }
     }
 
     public void setPositiveChange(int directionOfChangeIndex){
+        this.tempWeigth = this.weights[directionOfChangeIndex];
         this.directionOfChange[directionOfChangeIndex] = Direction.POSITIVE;
         this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] + CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
     }
 
     public void setNegativeChange(int directionOfChangeIndex){
+        this.tempWeigth = this.weights[directionOfChangeIndex];
         this.directionOfChange[directionOfChangeIndex] = Direction.NEGATIVE;
         this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] - CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
     }
 
-    public void setImmutable(int directionOfChangeIndex){
+    public void setDirectionImmutable(int directionOfChangeIndex){
         this.directionOfChange[directionOfChangeIndex] = Direction.IMMUTABLE;
     }
 
+    public void setDirectionPositive(int directionOfChangeIndex){
+        this.directionOfChange[directionOfChangeIndex] = Direction.POSITIVE;
+    }
+
+    public void setDirectionNegative(int directionOfChangeIndex){
+        this.directionOfChange[directionOfChangeIndex] = Direction.NEGATIVE;
+    }
+
     public void repairConditionWithDirection(int directionOfChangeIndex){
-        switch (this.directionOfChange[directionOfChangeIndex]){
-            case POSITIVE :
-                this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] - CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
-            case NEGATIVE:
-                this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] + CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
-        }
+        this.weights[directionOfChangeIndex] = this.tempWeigth;
         this.directionOfChange[directionOfChangeIndex] = Direction.IMMUTABLE;
     }
 
     public void repairWeight(int directionOfChangeIndex){
-        switch (this.directionOfChange[directionOfChangeIndex]){
-            case POSITIVE :
-                this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] - CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
-            case NEGATIVE:
-                this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] + CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
-        }
+        this.weights[directionOfChangeIndex] = this.tempWeigth;
     }
 
     @Override
