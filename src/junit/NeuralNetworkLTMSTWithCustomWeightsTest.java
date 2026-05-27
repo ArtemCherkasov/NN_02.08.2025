@@ -74,7 +74,7 @@ class NeuralNetworkLTMSTWithCustomWeightsTest {
 
     @Test
     void outputLayersTest() {
-        double[][] expectedOutput = new double[][]{{0.5913384287136019, 0.562316925549143, 0.5735756407032029, 0.5846630759029958, 0.5107960908304006, 0.5338735696665052, 0.55777244095302, 0.5800606196362431, 0.5993514341029604}};
+        double[][] expectedOutput = new double[][]{{0.36950113148288527, 0.25057054125561595, 0.2964548219636936, 0.3419456865478178, 0.04319107637075797, 0.13570214294740843, 0.23212647822513555, 0.32302224629996096, 0.40276347863714385}};
         Assertions.assertArrayEquals(expectedOutput[0], neuralNetworkLSTM.getNetworkOutput()[0], 0.0);
     }
 
@@ -88,7 +88,29 @@ class NeuralNetworkLTMSTWithCustomWeightsTest {
                 System.out.println(neuralNetworkLSTM.getMeanSquaredError());
             }
         }
-        Assertions.assertEquals(0.34701846827940724, neuralNetworkLSTM.getMeanSquaredError());
+        Assertions.assertEquals(0.6256966863807255, neuralNetworkLSTM.getMeanSquaredError());
+    }
+
+    @Test
+    void learningRateUpdateTest(){
+        neuralNetworkLSTM.setCurrentSquaredError(0.12);
+        neuralNetworkLSTM.learningStepValueUpdate();
+        Assertions.assertEquals(0.1, neuralNetworkLSTM.getLearningStepValue());
+        neuralNetworkLSTM.setCurrentSquaredError(0.18);
+        neuralNetworkLSTM.learningStepValueUpdate();
+        Assertions.assertEquals(0.1, neuralNetworkLSTM.getLearningStepValue());
+        neuralNetworkLSTM.setCurrentSquaredError(0.67123);
+        neuralNetworkLSTM.learningStepValueUpdate();
+        Assertions.assertEquals(0.1, neuralNetworkLSTM.getLearningStepValue());
+        neuralNetworkLSTM.setCurrentSquaredError(0.067123);
+        neuralNetworkLSTM.learningStepValueUpdate();
+        Assertions.assertEquals(0.01, neuralNetworkLSTM.getLearningStepValue());
+        neuralNetworkLSTM.setCurrentSquaredError(0.0017);
+        neuralNetworkLSTM.learningStepValueUpdate();
+        Assertions.assertEquals(0.001, neuralNetworkLSTM.getLearningStepValue());
+        neuralNetworkLSTM.setCurrentSquaredError(0.00099);
+        neuralNetworkLSTM.learningStepValueUpdate();
+        Assertions.assertEquals(0.0001, neuralNetworkLSTM.getLearningStepValue());
     }
 
     private double weightGenerate() {

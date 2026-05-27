@@ -10,12 +10,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.List;
 
 class NeuralNetworkLTMSTWithRandomWeightsTest {
 
     private final static String PATH_TO_DATA_DIR = "\\resources\\";
     private final static String FILE_NAME = "\\EURUSD_H1_200906120000_202509251100.csv\\";
+    private final static String FILE_WEIGHT_DATA = "\\EURUSD_H1_WEIGHT_35.txt\\";
     private final static int LSTM_CELLS_COUNT_IN_ROW = 35;
     private final static int LSTM_ROW_COUNT = 1;
 
@@ -37,11 +39,23 @@ class NeuralNetworkLTMSTWithRandomWeightsTest {
     @Test
     void meanSquaredErrorTest(){
         //TODO
-        for(int i = 0; i < 10000; ++i){
+        String filePath = System.getProperty("user.dir").concat(PATH_TO_DATA_DIR).concat(FILE_WEIGHT_DATA);
+        try {
+            DataHelper.loadLSTMData(filePath, neuralNetworkLSTM);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        for(int i = 0; i < 60; ++i){
             neuralNetworkLSTM.setDirection();
             neuralNetworkLSTM.learningAction();
             neuralNetworkLSTM.forwardPropagation();
-            System.out.println(neuralNetworkLSTM.getMeanSquaredError());
+            System.out.println(i + " " + String.format("%.15f", neuralNetworkLSTM.getMeanSquaredError()));
+        }
+        try {
+            DataHelper.saveLSTMData(filePath, neuralNetworkLSTM);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         Assertions.assertEquals(0.15275728127875782, neuralNetworkLSTM.getMeanSquaredError());
 

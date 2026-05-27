@@ -86,10 +86,9 @@ class NeuralNetworkLSTMEURUSDTest {
     @Test
     void nnLSTMTest() {
         nnLSTM.forwardPropagation();
-        PriceSigmaConverter ps = new PriceSigmaConverter();
-        Assertions.assertEquals(0.7308418241342797, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[0]);
-        Assertions.assertEquals(0.7130246977898583, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[1]);
-        Assertions.assertEquals(0.6681215198677201, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[2]);
+        Assertions.assertEquals(0.9998075590018478, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[0]);
+        Assertions.assertEquals(0.95784291433728, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[1]);
+        Assertions.assertEquals(0.7392350685610722, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[2]);
     }
 
     private double weightGenerate() {

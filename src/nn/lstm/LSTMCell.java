@@ -157,6 +157,15 @@ public class LSTMCell implements LayerInterface {
         return c;
     }
 
+    public double[] archTanhFunctionVector(double[] a) {
+        int vectorLength = a.length;
+        double[] c = new double[vectorLength];
+        for (int vectorIndex = 0; vectorIndex < vectorLength; vectorIndex++) {
+            c[vectorIndex] = Math.log((1 + a[vectorIndex])/ (1 - a[vectorIndex])) / 2.0;
+        }
+        return c;
+    }
+
     /**
      * Derivative of the hyperbolic tangent function (1 - tan^2(a))
      *
@@ -202,7 +211,6 @@ public class LSTMCell implements LayerInterface {
         double[] hadamardProductInputGateCandidateGate = this.hadamardProduct(this.inputGate.getLayerOutputs(), this.candidateCellState.getLayerOutputs());
         this.cellState = this.pointwiseAddition(this.cellState, hadamardProductInputGateCandidateGate);
         this.hiddenState = this.hadamardProduct(this.outputGate.getLayerOutputs(), this.tanhFunctionVector(this.cellState));
-        this.hiddenState = this.sigmaFunction(this.hiddenState);
     }
 
     public void enumerationAllNodes(){
@@ -232,6 +240,10 @@ public class LSTMCell implements LayerInterface {
 
     public double[] getOutputVector() {
         return this.hiddenState;
+    }
+
+    public double[] getOutputRealVector() {
+        return this.archTanhFunctionVector(this.hiddenState);
     }
 
     public double[] getCellState() {

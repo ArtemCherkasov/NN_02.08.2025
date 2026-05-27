@@ -103,8 +103,8 @@ public class LSTMRow {
         double mse = 0.0;
         int totalElementCount = cellsCount * outputCountPerCell;
         for(int cellIndex = 0; cellIndex < cellsCount; ++cellIndex){
-            for (int outputCount = 0; outputCount < outputCountPerCell; ++outputCount){
-                mse = mse + Math.pow(tagetMatrix[cellIndex][outputCount] - predictedMatrix[cellIndex][outputCount], 2);
+            for (int outputIndex = 0; outputIndex < outputCountPerCell; ++outputIndex){
+                mse = mse + Math.pow(tagetMatrix[cellIndex][outputIndex] - predictedMatrix[cellIndex][outputIndex], 2);
             }
         }
         mse = mse / totalElementCount;
@@ -119,11 +119,11 @@ public class LSTMRow {
         double mse = 0.0;
         int totalElementCount = cellsCount * outputCountPerCell;
         for(int cellIndex = index; cellIndex < cellsCount; ++cellIndex){
-            for (int outputCount = 0; outputCount < outputCountPerCell; ++outputCount){
-                mse = mse + Math.pow(tagetMatrix[cellIndex][outputCount] - predictedMatrix[cellIndex][outputCount], 2);
+            for (int outputIndex = 0; outputIndex < outputCountPerCell; ++outputIndex){
+                mse = mse + Math.pow(tagetMatrix[cellIndex][outputIndex] - predictedMatrix[cellIndex][outputIndex], 2);
             }
         }
-        mse = mse / totalElementCount;
+        mse = mse / (totalElementCount - index);
         return mse;
     }
 }

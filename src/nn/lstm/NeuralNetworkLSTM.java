@@ -14,6 +14,7 @@ public class NeuralNetworkLSTM {
     private final List<LSTMRow> lstmRowList;
     private int rowsCount;
     private double currentSquaredError;
+    private double learningStepValue = CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
 
     public NeuralNetworkLSTM(int singleCellInputCount, int cellsCount, int rowsCount) {
         masterRow = null;
@@ -122,19 +123,35 @@ public class NeuralNetworkLSTM {
         for (LSTMRow row : this.getLstmRowList()) {
             for (LSTMCell cell : row.getCellList()) {
                 for (Node node : cell.getInputGate().getNodes()) {
-                    node.learningAction();
+                    node.learningAction(this.learningStepValue);
                 }
                 for (Node node : cell.getOutputGate().getNodes()) {
-                    node.learningAction();
+                    node.learningAction(this.learningStepValue);
                 }
                 for (Node node : cell.getForgetGate().getNodes()) {
-                    node.learningAction();
+                    node.learningAction(this.learningStepValue);
                 }
                 for (Node node : cell.getCandidateCellState().getNodes()) {
-                    node.learningAction();
+                    node.learningAction(this.learningStepValue);
                 }
             }
         }
+    }
+
+    public void learningStepValueUpdate(){
+        double factor = 1.0;
+        while (this.currentSquaredError*factor < 1.0){
+            factor = factor*10.0;
+        }
+        this.learningStepValue = 1.0/factor;
+    }
+
+    public void setCurrentSquaredError(double currentSquaredError) {
+        this.currentSquaredError = currentSquaredError;
+    }
+
+    public double getLearningStepValue() {
+        return this.learningStepValue;
     }
 
     public void setExpectedRowOutput(double[][] expectedRowOutput) {
@@ -156,7 +173,7 @@ public class NeuralNetworkLSTM {
     private void setNodeDirection(Node node, int cellIndex, int weightIndex){
         node.setNegativeChange(weightIndex);
         this.forwardPropagation();
-        double actionSquaredError = this.getMeanSquaredErrorStartFromCellIndex(cellIndex);
+        double actionSquaredError = this.getMeanSquaredError();
         if (actionSquaredError > this.currentSquaredError){
             node.setDirectionPositive(weightIndex);
         } else if (actionSquaredError == this.currentSquaredError){

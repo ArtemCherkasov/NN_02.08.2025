@@ -87,9 +87,9 @@ class NeuralNetworkLSTMForwardPropagationTest {
     @Test
     void nnLSTMTest() {
         nnLSTM.forwardPropagation();
-        Assertions.assertEquals(0.5475978390193565, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[0]);
-        Assertions.assertEquals(0.6386984956497523, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[1]);
-        Assertions.assertEquals(0.6845361226740238, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[2]);
+        Assertions.assertEquals(0.15767973125600834, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[0]);
+        Assertions.assertEquals(0.48037969297209854, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[1]);
+        Assertions.assertEquals(0.7071640247198026, nnLSTM.getLstmRowList().get(29).getLastLSTMCellOutput()[2]);
     }
 
 }

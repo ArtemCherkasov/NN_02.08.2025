@@ -1,12 +1,18 @@
 package nn.helpers;
 
+import nn.common.Node;
 import nn.helpers.eurusd.MarketPriceEURUSD;
+import nn.lstm.LSTMCell;
+import nn.lstm.LSTMRow;
+import nn.lstm.NeuralNetworkLSTM;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class DataHelper {
@@ -54,5 +60,59 @@ public class DataHelper {
             seriesIndex++;
         }
         return series;
+    }
+
+    public static void saveLSTMData(String pathToFile, NeuralNetworkLSTM neuralNetwork) throws IOException {
+        Files.deleteIfExists(Paths.get(pathToFile));
+        Files.createFile(Paths.get(pathToFile));
+        for (LSTMRow row : neuralNetwork.getLstmRowList()) {
+            for (LSTMCell cell : row.getCellList()) {
+                for (Node node : cell.getInputGate().getNodes()) {
+                    List<String> line = Arrays.asList(Arrays.toString(node.getWeights()));
+                    Files.write(Paths.get(pathToFile), line, StandardOpenOption.APPEND);
+                }
+                for (Node node : cell.getOutputGate().getNodes()) {
+                    List<String> line = Arrays.asList(Arrays.toString(node.getWeights()));
+                    Files.write(Paths.get(pathToFile), line, StandardOpenOption.APPEND);
+                }
+                for (Node node : cell.getForgetGate().getNodes()) {
+                    List<String> line = Arrays.asList(Arrays.toString(node.getWeights()));
+                    Files.write(Paths.get(pathToFile), line, StandardOpenOption.APPEND);
+                }
+                for (Node node : cell.getCandidateCellState().getNodes()) {
+                    List<String> line = Arrays.asList(Arrays.toString(node.getWeights()));
+                    Files.write(Paths.get(pathToFile), line, StandardOpenOption.APPEND);
+                }
+            }
+        }
+    }
+
+    public static void loadLSTMData(String pathToFile, NeuralNetworkLSTM neuralNetwork) throws IOException {
+        List<String> lines = Files.lines(Paths.get(pathToFile)).toList();
+        int lineIndex = 0;
+        for (LSTMRow row : neuralNetwork.getLstmRowList()) {
+            for (LSTMCell cell : row.getCellList()) {
+                for (Node node : cell.getInputGate().getNodes()) {
+                    double[] weightDataArray = Arrays.stream(lines.get(lineIndex).replace("[", "").replace("]", "").split(", ")).mapToDouble(Double::parseDouble).toArray();
+                    node.setCustomWeights(weightDataArray);
+                    lineIndex++;
+                }
+                for (Node node : cell.getOutputGate().getNodes()) {
+                    double[] weightDataArray = Arrays.stream(lines.get(lineIndex).replace("[", "").replace("]", "").split(", ")).mapToDouble(Double::parseDouble).toArray();
+                    node.setCustomWeights(weightDataArray);
+                    lineIndex++;
+                }
+                for (Node node : cell.getForgetGate().getNodes()) {
+                    double[] weightDataArray = Arrays.stream(lines.get(lineIndex).replace("[", "").replace("]", "").split(", ")).mapToDouble(Double::parseDouble).toArray();
+                    node.setCustomWeights(weightDataArray);
+                    lineIndex++;
+                }
+                for (Node node : cell.getCandidateCellState().getNodes()) {
+                    double[] weightDataArray = Arrays.stream(lines.get(lineIndex).replace("[", "").replace("]", "").split(", ")).mapToDouble(Double::parseDouble).toArray();
+                    node.setCustomWeights(weightDataArray);
+                    lineIndex++;
+                }
+            }
+        }
     }
 }

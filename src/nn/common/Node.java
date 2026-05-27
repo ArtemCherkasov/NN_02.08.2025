@@ -156,14 +156,14 @@ public class Node {
         return (Math.exp(summ) - Math.exp(-1 * summ)) / (Math.exp(summ) + Math.exp(-1 * summ));
     }
 
-    public void learningAction(){
+    public void learningAction(double learningStep){
         for(int directionOfChangeIndex = 0; directionOfChangeIndex < this.inputCount; ++directionOfChangeIndex){
             switch (this.directionOfChange[directionOfChangeIndex]){
                 case POSITIVE :
-                    this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] + CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
+                    this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] + learningStep;
                     break;
                 case NEGATIVE:
-                    this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] - CommonConstants.LEARNING_STEP_DEFAULT_VALUE;
+                    this.weights[directionOfChangeIndex] = this.weights[directionOfChangeIndex] - learningStep;
                     break;
             }
         }
