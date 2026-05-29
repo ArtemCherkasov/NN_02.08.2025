@@ -78,40 +78,53 @@ public class NeuralNetworkLSTM {
         return this.lstmRowList;
     }
 
+    /**
+    full forward propagation
+     */
     public void forwardPropagation() {
-        this.lstmRowList.get(0).forwardPropagationRow();
+        this.lstmRowList.get(0).forwardPropagationRow(0);
         for (int rowIndex = 1; rowIndex < this.rowsCount; rowIndex++) {
             for (int cellIndex = 0; cellIndex < this.lstmRowList.get(rowIndex).getLstmCellCount(); cellIndex++) {
+                //TODO
+                /*
                 this.lstmRowList.get(rowIndex).getCell(cellIndex).setCellStateInput(this.lstmRowList.get(rowIndex - 1).getCell(cellIndex).getCellState());
                 this.lstmRowList.get(rowIndex).getCell(cellIndex).setHiddenStateInput(this.lstmRowList.get(rowIndex - 1).getCell(cellIndex).getHiddenState());
-                this.lstmRowList.get(rowIndex).forwardPropagationRow();
+                 */
+                this.lstmRowList.get(rowIndex).forwardPropagationRow(cellIndex);
             }
         }
     }
 
+    /**
+     partial forward propagation for single row
+     */
+    public void forwardPropagationForSingleRow(int rowIndex, int cellIndex) {
+        this.lstmRowList.get(rowIndex).forwardPropagationRow(cellIndex);
+    }
+
     public void setDirection(){
         this.forwardPropagation();
-        this.currentSquaredError = this.getMeanSquaredError();
-        for (LSTMRow row : this.getLstmRowList()) {
-            for (int cellIndex = 0; cellIndex < row.getLstmCellCount(); cellIndex++){
-                for (Node node : row.getCell(cellIndex).getInputGate().getNodes()) {
-                    for (int weightIndex = 0; weightIndex < node.getWeights().length; weightIndex++) {
-                        this.setNodeDirection(node, cellIndex, weightIndex);
+        for (int rowIndex = 0; rowIndex < this.getLstmRowList().size(); rowIndex++) {
+            for (int cellIndex = 0; cellIndex < this.getLstmRowList().get(rowIndex).getLstmCellCount(); cellIndex++){
+                this.currentSquaredError = this.getMeanSquaredErrorStartFromCellIndex(cellIndex);
+                for (int nodeIndex = 0; nodeIndex < this.getLstmRowList().get(rowIndex).getCell(cellIndex).getInputGate().getNodesCount(); ++nodeIndex){
+                    for (int weightIndex = 0; weightIndex < this.getLstmRowList().get(rowIndex).getCell(cellIndex).getInputGate().getNode(nodeIndex).getWeights().length; weightIndex++) {
+                        this.setNodeDirection(this.getLstmRowList().get(rowIndex).getCell(cellIndex).getInputGate().getNode(nodeIndex), rowIndex, cellIndex, weightIndex);
                     }
                 }
-                for (Node node : row.getCell(cellIndex).getOutputGate().getNodes()) {
-                    for (int weightIndex = 0; weightIndex < node.getWeights().length; weightIndex++) {
-                        this.setNodeDirection(node, cellIndex, weightIndex);
+                for (int nodeIndex = 0; nodeIndex < this.getLstmRowList().get(rowIndex).getCell(cellIndex).getOutputGate().getNodesCount(); ++nodeIndex){
+                    for (int weightIndex = 0; weightIndex < this.getLstmRowList().get(rowIndex).getCell(cellIndex).getOutputGate().getNode(nodeIndex).getWeights().length; weightIndex++) {
+                        this.setNodeDirection(this.getLstmRowList().get(rowIndex).getCell(cellIndex).getOutputGate().getNode(nodeIndex), rowIndex, cellIndex, weightIndex);
                     }
                 }
-                for (Node node : row.getCell(cellIndex).getForgetGate().getNodes()) {
-                    for (int weightIndex = 0; weightIndex < node.getWeights().length; weightIndex++) {
-                        this.setNodeDirection(node, cellIndex, weightIndex);
+                for (int nodeIndex = 0; nodeIndex < this.getLstmRowList().get(rowIndex).getCell(cellIndex).getForgetGate().getNodesCount(); ++nodeIndex){
+                    for (int weightIndex = 0; weightIndex < this.getLstmRowList().get(rowIndex).getCell(cellIndex).getForgetGate().getNode(nodeIndex).getWeights().length; weightIndex++) {
+                        this.setNodeDirection(this.getLstmRowList().get(rowIndex).getCell(cellIndex).getForgetGate().getNode(nodeIndex), rowIndex, cellIndex, weightIndex);
                     }
                 }
-                for (Node node : row.getCell(cellIndex).getCandidateCellState().getNodes()) {
-                    for (int weightIndex = 0; weightIndex < node.getWeights().length; weightIndex++) {
-                        this.setNodeDirection(node, cellIndex, weightIndex);
+                for (int nodeIndex = 0; nodeIndex < this.getLstmRowList().get(rowIndex).getCell(cellIndex).getCandidateCellState().getNodesCount(); ++nodeIndex){
+                    for (int weightIndex = 0; weightIndex < this.getLstmRowList().get(rowIndex).getCell(cellIndex).getCandidateCellState().getNode(nodeIndex).getWeights().length; weightIndex++) {
+                        this.setNodeDirection(this.getLstmRowList().get(rowIndex).getCell(cellIndex).getCandidateCellState().getNode(nodeIndex), rowIndex, cellIndex, weightIndex);
                     }
                 }
             }
@@ -139,9 +152,9 @@ public class NeuralNetworkLSTM {
     }
 
     public void learningStepValueUpdate(){
-        double factor = 1.0;
+        double factor = 1.1;
         while (this.currentSquaredError*factor < 1.0){
-            factor = factor*10.0;
+            factor = factor*1.1;
         }
         this.learningStepValue = 1.0/factor;
     }
@@ -170,10 +183,10 @@ public class NeuralNetworkLSTM {
         return this.getFirstRow().getMeanSquaredErrorStartFromCellIndex(cellIndex);
     }
 
-    private void setNodeDirection(Node node, int cellIndex, int weightIndex){
+    private void setNodeDirection(Node node, int rowIndex, int cellIndex, int weightIndex){
         node.setNegativeChange(weightIndex);
-        this.forwardPropagation();
-        double actionSquaredError = this.getMeanSquaredError();
+        this.forwardPropagationForSingleRow(rowIndex, cellIndex);
+        double actionSquaredError = this.getMeanSquaredErrorStartFromCellIndex(cellIndex);
         if (actionSquaredError > this.currentSquaredError){
             node.setDirectionPositive(weightIndex);
         } else if (actionSquaredError == this.currentSquaredError){

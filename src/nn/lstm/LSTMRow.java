@@ -19,7 +19,7 @@ public class LSTMRow {
         this.cellList = new ArrayList<LSTMCell>();
         this.cellList.add(new LSTMCell(inputsCountArray[0], inputsCountArray[0], 1, 0, CommonConstants.LSTM_CELL_NAME));
         for (int cellIndex = 1; cellIndex < this.lstmCellCount; cellIndex++) {
-            this.cellList.add(new LSTMCell(this.cellList.get(cellIndex - 1).getOutputLength(), inputsCountArray[cellIndex], 1, cellIndex, CommonConstants.LSTM_CELL_NAME));
+            this.cellList.add(new LSTMCell(inputsCountArray[cellIndex], inputsCountArray[cellIndex], 1, cellIndex, CommonConstants.LSTM_CELL_NAME));
         }
         this.lastLayer = new Layer(this.getLastLSTMCellOutput().length, this.getLastLSTMCellOutput().length, 1, this.getLstmCellCount());
         this.rowOutput = new double[lstmCellCount][this.getLastLSTMCellOutput().length];
@@ -49,14 +49,15 @@ public class LSTMRow {
         this.getCell(CommonConstants.FIRST_CELL).setInputVectorX(inputVector);
     }
 
-    public void forwardPropagationRow() {
-        this.getCell(CommonConstants.FIRST_CELL).forwardPropagation();
-        for (int cellIndex = 1; cellIndex < this.lstmCellCount; ++cellIndex) {
-            double[] prevHiddenState = this.getCell(cellIndex - 1).getHiddenState();
-            double[] prevCellSate = this.getCell(cellIndex - 1).getCellState();
-            this.getCell(cellIndex).setHiddenStateInput(prevHiddenState);
-            this.getCell(cellIndex).setCellStateInput(prevCellSate);
-            this.getCell(cellIndex).forwardPropagation();
+    public void forwardPropagationRow(int cellIndex) {
+        for (int _cellIndex = cellIndex; _cellIndex < this.lstmCellCount; ++_cellIndex) {
+            if(_cellIndex > 0){
+                double[] prevHiddenState = this.getCell(_cellIndex - 1).getHiddenState();
+                double[] prevCellSate = this.getCell(_cellIndex - 1).getCellState();
+                this.getCell(_cellIndex).setHiddenStateInput(prevHiddenState);
+                this.getCell(_cellIndex).setCellStateInput(prevCellSate);
+            }
+            this.getCell(_cellIndex).forwardPropagation();
         }
         double[] outputLastVector = this.getCell(this.getLstmCellCount() - 1).getOutputVector();
         this.lastLayer.setInputs(outputLastVector);
@@ -117,13 +118,13 @@ public class LSTMRow {
         int cellsCount = this.lstmCellCount;
         int outputCountPerCell = this.getCell(0).getOutputLength();
         double mse = 0.0;
-        int totalElementCount = cellsCount * outputCountPerCell;
+        int totalElementCount = (cellsCount - index) * outputCountPerCell;
         for(int cellIndex = index; cellIndex < cellsCount; ++cellIndex){
             for (int outputIndex = 0; outputIndex < outputCountPerCell; ++outputIndex){
                 mse = mse + Math.pow(tagetMatrix[cellIndex][outputIndex] - predictedMatrix[cellIndex][outputIndex], 2);
             }
         }
-        mse = mse / (totalElementCount - index);
+        mse = mse / totalElementCount;
         return mse;
     }
 }

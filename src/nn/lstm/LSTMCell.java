@@ -6,6 +6,7 @@ import nn.common.Layer;
 import nn.common.Node;
 import nn.interfaces.LayerInterface;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -122,6 +123,23 @@ public class LSTMCell implements LayerInterface {
         this.inputGate.calculateLayerSigmaOutputs();
         this.candidateCellState.calculateLayerTanhOutputs();
         this.outputGate.calculateLayerSigmaOutputs();
+
+        /*
+        Thread[] tasks = new Thread[4];
+        tasks[0] = new Thread(this.forgetGate::calculateLayerSigmaOutputs);
+        tasks[1] = new Thread(this.inputGate::calculateLayerSigmaOutputs);
+        tasks[2] = new Thread(this.candidateCellState::calculateLayerTanhOutputs);
+        tasks[3] = new Thread(this.outputGate::calculateLayerSigmaOutputs);
+
+        try {
+            for (int taskIndex = 0; taskIndex < tasks.length; taskIndex++) {
+                tasks[taskIndex].start();
+                tasks[taskIndex].join();
+            }
+        } catch (InterruptedException ex) {
+            System.out.println(ex.getMessage());
+        }
+        */
     }
 
     public double[] hadamardProduct(double[] a, double[] b) {
